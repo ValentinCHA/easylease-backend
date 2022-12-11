@@ -6,6 +6,10 @@ const { checkBody } = require('../modules/checkBody');
 const bcrypt = require('bcrypt');
 const uid2 = require('uid2');
 
+router.get('/test', (req, res) => {
+  res.json({ result: true })
+})
+
 router.post('/signup', (req, res) => {
   if (!checkBody(req.body, ['email', 'password'])) {
     res.json({ result: false, error: 'Champs vides ou manquants !' });
