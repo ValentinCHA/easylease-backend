@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema({
   password: String,
   poste: String,
   token: String,
-  admin : Boolean,
+  isAdmin : Boolean,
 });
 
 const User = mongoose.model('users', userSchema);
