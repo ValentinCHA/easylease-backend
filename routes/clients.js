@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/test', (req, res) => {
+// const Client = require('../models/clients');
+const User = require('../models/users');
 
-  res.json({ result: true })
+router.get('/test/:token', (req, res) => {
+    User.findOne({ token: req.params.token })
+        .populate('client')
+        .then(data => {
+            if (data === true) {
+                res.json({ userInfos: data })
+            }
+        })
 })
 
-module.exports = router;
+module.exports = router
