@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   poste: String,
   token: String,
   isAdmin : Boolean,
-  // client....cle etrangere a mettre pour le populate a partir de client *******
+  clients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'clients' }]
 });
 
 const User = mongoose.model('users', userSchema);
