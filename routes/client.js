@@ -6,7 +6,7 @@ const User = require('../models/users');
 const { checkBody } = require('../modules/checkBody');
 
 router.post('/test', (req, res) => {
-    if (!checkBody(req.body, ['name', 'interlocutor', 'tel', 'adress', 'email', 'NumberOfEmployees', 'ClientBirth', 'chiffre', 'token'])) {
+    if (!checkBody(req.body, ['name', 'interlocutor', 'tel', 'address', 'email', 'numberOfEmployees', 'clientBirth', 'chiffre', 'token'])) {
         res.json({ result: false, error: 'Missing or empty fields' });
         return;
     }
@@ -16,11 +16,9 @@ router.post('/test', (req, res) => {
             const newClient = new Client({
                 name: req.body.name,
                 interlocutor: req.body.interlocutor,
-                tel: req.body.tel,
-                adress: req.body.adress,
-                email: req.body.email,
-                NumberOfEmployees: req.body.NumberOfEmployees,
-                ClientBirth: req.body.ClientBirth,
+                address: req.body.address,
+                numberOfEmployees: req.body.numberOfEmployees,
+                clientBirth: req.body.clientBirth,
                 chiffre: req.body.chiffre,
 
             });

@@ -10,6 +10,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var clientRouter = require('./routes/client');
+var scenaryRouter = require('./routes/scenary');
+var contratRouter = require('./routes/contrat');
 
 var app = express();
 
@@ -24,7 +26,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/scenary', scenaryRouter);
 app.use('/client', clientRouter);
+app.use('/contrat', contratRouter);
 
 
 
