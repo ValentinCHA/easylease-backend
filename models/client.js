@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const clientSchema = mongoose.Schema({
-  
   name: String,
   address: String,
   numberOfEmployees: Number,
@@ -10,9 +9,8 @@ const clientSchema = mongoose.Schema({
   // interlocutor: { type: mongoose.Schema.Types.ObjectId, ref: 'interlocutors' },
   // scenary: { type: mongoose.Schema.Types.ObjectId, ref: 'scenary' },
   // contrat:{ type: mongoose.Schema.Types.ObjectId, ref: 'contrats' },
-
 });
 
-const Client = mongoose.model('clients', clientSchema);
+const Client = mongoose.model("clients", clientSchema);
 
 module.exports = Client;
