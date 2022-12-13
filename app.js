@@ -12,6 +12,7 @@ var usersRouter = require('./routes/users');
 var scenaryRouter = require('./routes/scenary');
 var clientRouter = require('./routes/clients');
 var clientsRouter = require('./routes/clientsDarnel');
+var contratRouter = require('./routes/contrat');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/users', usersRouter);
 app.use('/scenary', scenaryRouter);
 app.use('/clients', clientsRouter);
 app.use('/client', clientRouter);
+app.use('/contrat', contratRouter);
 
 
 
