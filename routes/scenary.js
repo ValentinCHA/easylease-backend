@@ -9,7 +9,7 @@ router.get('/testroute', (req, res) => {
   });
 
   router.post('/new', (req, res) => {
-    if (!checkBody(req.body, ['client', 'name', 'type', 'duration', 'amount', 'creationDate', 'contratStart', 'contratEnd', 'residualValue', 'links'])) {
+    if (!checkBody(req.body, ['client', 'name', 'type', 'duration', 'amount', 'creationDate', 'contratStart', 'contratEnd', 'residualValue', 'links', 'marge'])) {
       res.json({ result: false, error: 'Champs vides ou manquants !' });
       return;
     }
@@ -29,6 +29,7 @@ router.get('/testroute', (req, res) => {
             contratEnd: req.body.contratEnd,
             residualValue: req.body.residualValue,
             links: req.body.links,
+            marge: req.body.marge,
         });
   
         newScenary.save().then(newScenary => {
@@ -75,7 +76,28 @@ router.get('/testroute', (req, res) => {
   })
 
   router.put('/update/:name', (req,res) => {
-    Scenary.updateOne({name: req.params.name}, )
+    Scenary.updateOne({name: req.params.name}, {
+        client: req.body.client,
+        name: req.body.name,
+        type: req.body.type,
+        duration: req.body.duration,
+        amount : req.body.amount,
+        creationDate: req.body.creationDate,
+        contratStart: req.body.contratStart,
+        contratEnd: req.body.contratEnd,
+        residualValue: req.body.residualValue,
+        links: req.body.links,
+        marge: req.body.marge,
+    }).then(() => {
+      Scenary.findOne({ name: req.params.name })
+    .then(data => {
+        if (data) {
+            res.json({result: true, scenary: data})
+        } else {
+            res.json({result: false, error: "Scenario pas trouver !"})
+        }
+    })
+    })
   })
 
 module.exports = router;

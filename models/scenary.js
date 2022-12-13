@@ -11,6 +11,7 @@ const scenarySchema = mongoose.Schema({
   contratEnd: Date,
   residualValue: Number,
   links: String,
+  marge: Number,
 });
 
 const Scenary = mongoose.model('scenary', scenarySchema);
