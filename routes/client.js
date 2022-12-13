@@ -11,50 +11,48 @@ router.post('/uploadClient', (req, res) => {
         return;
     }
 
-Client.findOne({ name: req.body.name }).then(data => {
-    if (data === null) {
-        const newClient = new Client({
-            name: req.body.name,
-            tel: req.body.tel,
-            address: req.body.address,
-            numberOfEmployees: req.body.numberOfEmployees,
-            chiffre: req.body.chiffre,
-            interlocutors : req.body.interlocutors,
-        });
-        // Sauvegarder le client créé 
-        newClient.save().then(newDoc => {
-            // console.log('nouveau client créé',newDoc);
-            // Cherche le user grace au token
-            User.updateOne({ token: req.body.token },{
-                $push : {clients : newDoc._id}
-            }).then(user => {
-                    
-                    //   ajout du client dans le tableau user
-                    user.clients.push(newDoc._id)
+    Client.findOne({ name: req.body.name }).then(data => {
+        if (data === null) {
+            const newClient = new Client({
+                name: req.body.name,
+                interlocutor: req.body.interlocutor,
+                address: req.body.address,
+                numberOfEmployees: req.body.numberOfEmployees,
+                clientBirth: req.body.clientBirth,
+                chiffre: req.body.chiffre,
 
-                    console.log(user.clients);
-
+            });
+            // Sauvegarder le client créé 
+            newClient.save().then(newDoc => {
+                // console.log('nouveau client créé',newDoc);
+                // Cherche le user grace au token
+                User.updateOne({ token: req.body.token },{
+                    $push : {clients : newDoc._id}
                 })
-            res.json({ result: true, message: "Bienvenue!" });
-        });
-    } else {
+                    .then(user => {
+                        //   ajout du client dans le tableau user
 
-        res.json({ result: false, error: 'Client already exists'});
-    }
-})
+                        console.log('user',user);
+                        res.json({ result: true, message: "Bienvenue!" });
+                    })
+            });
+        } else {
+
+            res.json({ result: false, error: 'Client already exists' });
+        }
+    })
 })
 
-router.get('/test/:id', (req, res) => {
-    User.findById(req.params.id)
+router.get('/test/:token', (req, res) => {
+    User.findOne({token:req.params.token})
         .populate('clients')
         .then(data => {
             if (data) {
                 res.json({ userInfos: data })
             } else {
                 res.json({ message: 'rien trouvé' })
-
-        }
-    })
+            }
+        })
 })
 
 module.exports = router

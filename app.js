@@ -9,9 +9,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var scenaryRouter = require('./routes/scenary');
 var clientRouter = require('./routes/client');
-var clientsRouter = require('./routes/clientsDarnel');
+var scenaryRouter = require('./routes/scenary');
 var contratRouter = require('./routes/contrat');
 
 var app = express();
@@ -28,7 +27,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/scenary', scenaryRouter);
-app.use('/clients', clientsRouter);
 app.use('/client', clientRouter);
 app.use('/contrat', contratRouter);
 
