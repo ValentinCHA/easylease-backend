@@ -5,8 +5,24 @@ const { checkBody } = require('../modules/checkBody');
 const Contrat = require('../models/contrat')
 
     router.get('/allContrat', (req, res) => {
-        res.json({ result: true})
+        Contrat.find()
+        .then(data=>{
+            if(data){
+                res.json({ result: true, contrat: data})
+            }else{
+                res.json({result: false, error:'problème du get'})
+            }
+        })
     });
+    
+    router.get('/contrat/:_id',(req,res)=>{
+        Contrat.findById({_id: req.params._id})
+        .then(data=>{
+            if(data){
+                res.json({result: true, contrat: data})
+            }
+        })
+    })
 
     router.post('/addContrat',(req,res)=>{
         if (!checkBody(req.body, ['client', 'name', 'type', 'duration', 'amount', 'creationDate', 'contratStart', 'contratEnd', 'residualValue','links',])) {
