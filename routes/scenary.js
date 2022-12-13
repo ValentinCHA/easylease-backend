@@ -9,7 +9,7 @@ router.get('/testroute', (req, res) => {
   });
 
   router.post('/new', (req, res) => {
-    if (!checkBody(req.body, ['client', 'name', 'type', 'duration', 'amount', 'creationDate', 'contratStart', 'contratEnd', 'residualValue'])) {
+    if (!checkBody(req.body, ['client', 'name', 'type', 'duration', 'amount', 'creationDate', 'contratStart', 'contratEnd', 'residualValue', 'links'])) {
       res.json({ result: false, error: 'Champs vides ou manquants !' });
       return;
     }
@@ -28,6 +28,7 @@ router.get('/testroute', (req, res) => {
             contratStart: req.body.contratStart,
             contratEnd: req.body.contratEnd,
             residualValue: req.body.residualValue,
+            links: req.body.links,
         });
   
         newScenary.save().then(newScenary => {
@@ -52,7 +53,7 @@ router.get('/testroute', (req, res) => {
   });
 
   router.get('/:name', (req,res) => {
-    Scenary.findOne({ name: { $regex: new RegExp(req.params.name, 'i') } })
+    Scenary.findOne({ name: req.params.name })
     .then(data => {
         if (data) {
             res.json({result: true, scenary: data})
@@ -62,5 +63,19 @@ router.get('/testroute', (req, res) => {
     })
   });
 
+  router.delete('/:name', (req,res) => {
+    Scenary.deleteOne({ name : req.params.name})
+    .then(data => {
+      if (data) {
+        res.json({result: true, scenary: data})
+    } else {
+        res.json({result: false, error: "Scenario pas trouver !"})
+    }
+    })
+  })
+
+  router.put('/update/:name', (req,res) => {
+    Scenary.updateOne({name: req.params.name}, )
+  })
 
 module.exports = router;
