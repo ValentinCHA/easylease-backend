@@ -3,6 +3,7 @@ var router = express.Router();
 const { checkBody } = require("../modules/checkBody");
 
 const Contrat = require("../models/contrat");
+const Interlocutor = require("../models/interlocutor");
 
 router.get("/allContrat", (req, res) => {
   Contrat.find().then((data) => {
@@ -14,32 +15,35 @@ router.get("/allContrat", (req, res) => {
   });
 });
 
-router.get("/contrat/:_id", (req, res) => {
-  Contrat.findById({ _id: req.params._id }).then((data) => {
-    if (data) {
-      res.json({ result: true, contrat: data });
-    }
-  });
+router.get("/:_id", (req, res) => {
+  Contrat.findById({ _id: req.params._id })
+    // .populate("clients")
+    // .populate("interlocutor")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, contrat: data });
+      }
+    });
 });
 
 router.post("/addContrat", (req, res) => {
-  if (
-    !checkBody(req.body, [
-      "client",
-      "name",
-      "type",
-      "duration",
-      "amount",
-      "creationDate",
-      "contratStart",
-      "contratEnd",
-      "residualValue",
-      "links",
-    ])
-  ) {
-    res.json({ result: false, error: "Champs vides ou manquants !" });
-    return;
-  }
+  // if (
+  //   !checkBody(req.body, [
+  //     "client",
+  //     "name",
+  //     "type",
+  //     "duration",
+  //     "amount",
+  //     "creationDate",
+  //     "contratStart",
+  //     "contratEnd",
+  //     "residualValue",
+  //     "links",
+  //   ])
+  // ) {
+  //   res.json({ result: false, error: "Champs vides ou manquants !" });
+  //   return;
+  // }
 
   Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
     (data) => {
