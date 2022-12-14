@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
   email: String,
   password: String,
   poste: String,
   token: String,
-  isAdmin : Boolean,
-  // client....cle etrangere a mettre pour le populate a partir de client *******
+  isAdmin: Boolean,
+  // clients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'clients' }]
 });
 
-const User = mongoose.model('users', userSchema);
+const User = mongoose.model("users", userSchema);
 
 module.exports = User;
