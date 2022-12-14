@@ -26,6 +26,7 @@ router.post('/test', (req, res) => {
             newClient.save().then(newDoc => {
                 // console.log('nouveau client créé',newDoc);
                 // Cherche le user grace au token
+                // dans le store il existe uniquement que le token de l'utilisateur, l'id est une info trop importante par rapport a la secutité
                 User.updateOne({ token: req.body.token }, {
                     $push: { clients: newDoc._id }
                 })
@@ -48,9 +49,9 @@ router.get('/test/:token', (req, res) => {
         .populate('clients')
         .then(data => {
             if (data) {
-                res.json({ userInfos: data })
+                res.json({ clientsInfos: data.clients, result: true })
             } else {
-                res.json({ message: 'rien trouvé' })
+                res.json({ message: 'not found' })
             }
         })
 })
