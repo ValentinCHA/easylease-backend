@@ -40,12 +40,14 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/signin', (req, res) => {
+  console.log(req.body);
   if (!checkBody(req.body, ['email', 'password'])) {
     res.json({ result: false, error: 'Champs vides ou manquants' });
     return;
   }
 
   User.findOne({ email: { $regex: new RegExp(req.body.email, 'i') } }).then(data => {
+    console.log(data);
     if (bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token, email: data.email, poste: data.poste, isAdmin : data.isAdmin });
     } else {
