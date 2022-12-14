@@ -17,8 +17,8 @@ router.get("/allContrat", (req, res) => {
 
 router.get("/:_id", (req, res) => {
   Contrat.findById({ _id: req.params._id })
-    // .populate("clients")
-    // .populate("interlocutor")
+    //.populate("client")
+    .populate("interlocutor")
     .then((data) => {
       if (data) {
         res.json({ result: true, contrat: data });
@@ -51,7 +51,7 @@ router.post("/addContrat", (req, res) => {
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
-          interlocutor: "639850781650e2947b80f6c5",
+          interlocutor: "6399989d3ef49dd055a82f28",
           type: req.body.type,
           duration: req.body.duration,
           amount: req.body.amount,

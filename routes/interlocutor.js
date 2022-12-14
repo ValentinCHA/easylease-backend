@@ -16,7 +16,7 @@ router.get("/allInterlocuteur", (req, res) => {
 
 router.get("/:_id", (req, res) => {
   Interlocutor.findById({ _id: req.params._id })
-    .populate("clients")
+    .populate("client")
     .then((data) => {
       if (data) {
         res.json({ result: true, contrat: data });
@@ -33,7 +33,7 @@ router.post("/addInterlocuteur", (req, res) => {
   }
 
   Interlocutor.findOne({
-    nom: { $regex: new RegExp(req.body.name, "i") },
+    nom: { $regex: new RegExp(req.body.nom, "i") },
   }).then((data) => {
     if (!data) {
       const newInterlocutor = new Interlocutor({
@@ -45,7 +45,7 @@ router.post("/addInterlocuteur", (req, res) => {
         client: req.body.client,
       });
       newInterlocutor.save().then((newInterlocutor) => {
-        res.json({ result: true, contrat: newInterlocutor });
+        res.json({ result: true, newInterlocutor: newInterlocutor });
       });
     } else {
       res.json({ result: false, error: "Interlocuteur déjà existant !" });
