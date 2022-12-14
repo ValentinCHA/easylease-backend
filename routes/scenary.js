@@ -66,8 +66,8 @@ router.get("/all", (req, res) => {
   });
 });
 
-router.get("/:name", (req, res) => {
-  Scenary.findOne({ name: req.params.name }).then((data) => {
+router.get("/:id", (req, res) => {
+  Scenary.findById({ _id: req.params.id }).then((data) => {
     if (data) {
       res.json({ result: true, scenary: data });
     } else {
