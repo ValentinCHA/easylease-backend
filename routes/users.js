@@ -46,6 +46,11 @@ router.post('/signin', (req, res) => {
   }
 
   User.findOne({ email: { $regex: new RegExp(req.body.email, 'i') } }).then(data => {
+    // FAIRE UN IF DATA NULL = RETURN
+    if (!data) {
+      res.json({result: false, error: "Utilisateur innexistant"})
+      return
+    }
     if (bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token, email: data.email, poste: data.poste, isAdmin : data.isAdmin });
     } else {
