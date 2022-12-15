@@ -2,13 +2,12 @@ var express = require('express');
 var router = express.Router();
 const Client = require('../models/client');
 const User = require('../models/users');
-
 const { checkBody } = require('../modules/checkBody');
 
 router.post('/test', (req, res) => {
-    if (!checkBody(req.body, ['name', 'address', 'numberOfEmployees', 'clientBirth', 'chiffre'])) {
+    if (!checkBody(req.body, ['name', 'address', 'numberOfEmployees', 'clientBirth', 'chiffre', 'token',])) {
         res.json({ result: false, error: 'Missing or empty fields' });
-        return; 
+        return;
     }
 
     Client.findOne({ name: req.body.name }).then(data => {
