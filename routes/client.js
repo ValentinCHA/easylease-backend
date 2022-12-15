@@ -38,7 +38,7 @@ router.post("/uploadClient", async (req, res) => {
         const newInterlocutor = new Interlocutor({
           client: newDoc._id,
           tel: e.phoneNumber,
-          name: req.body.name,
+          name: e.name,
           firstname: e.firstname,
           email: e.email,
           poste: e.poste,
