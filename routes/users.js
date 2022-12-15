@@ -40,12 +40,14 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/signin', (req, res) => {
+  console.log(req.body);
   if (!checkBody(req.body, ['email', 'password'])) {
     res.json({ result: false, error: 'Champs vides ou manquants' });
     return;
   }
 
   User.findOne({ email: { $regex: new RegExp(req.body.email, 'i') } }).then(data => {
+    console.log(data);
     // FAIRE UN IF DATA NULL = RETURN
     if (!data) {
       res.json({result: false, error: "Utilisateur innexistant"})
