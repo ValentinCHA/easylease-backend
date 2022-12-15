@@ -12,7 +12,6 @@ const interlocutorSchema = new mongoose.Schema({
 const Interlocutor = mongoose.model('interlocutors', interlocutorSchema);
 
 module.exports = Interlocutor;
-const mongoose = require("mongoose");
 
 /*const interlocutorSchema = mongoose.Schema({
   nom: String,
@@ -25,4 +24,4 @@ const mongoose = require("mongoose");
 
 const Interlocutor = mongoose.model("interlocutors", interlocutorSchema);
 */
-module.exports = Interlocutor;
+
