@@ -56,40 +56,40 @@ router.post("/uploadClient", async (req, res) => {
       // Sauvegarder le client créé
       let newDoc = await newClient.save();
 
-      // console.log('nouveau client créé',newDoc);
-      // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-      req.body.interlocutors.map(async (e) => {
-        const newInterlocutor = new Interlocutor({
-          client: newDoc._id,
-          tel: e.phoneNumber,
-          name: req.body.name,
-          firstname: e.firstname,
-          email: e.email,
-          poste: e.poste,
-        });
-        //sauvegarde le nouvel interlocuteur
-        let newInterloc = await newInterlocutor.save();
+  // console.log('nouveau client créé',newDoc);
+  // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+  req.body.interlocutors.map(async (e) => {
+    const newInterlocutor = new Interlocutor({
+      client: newDoc._id,
+      tel: e.phoneNumber,
+      name: req.body.name,
+      firstname: e.firstname,
+      email: e.email,
+      poste: e.poste,
+    });
+    //sauvegarde le nouvel interlocuteur
+    let newInterloc = await newInterlocutor.save();
 
-        let clientToUpdate = await Client.updateOne(
-          {
-            _id: newDoc._id,
-          },
-          {
-            $push: { interlocutor: newInterloc._id },
-          }
-        );
-      });
-      // Cherche le user grace au token
+    let clientToUpdate = await Client.updateOne(
+      {
+        _id: newDoc._id,
+      },
+      {
+        $push: { interlocutor: newInterloc._id },
+      }
+    );
+  });
+  // Cherche le user grace au token
 
-      let userData = await User.updateOne(
-        { token: req.body.token },
-        {
-          $push: { clients: newDoc._id },
-        }
-      );
-    } else {
-      res.json({ result: false, error: "Client already exists" });
+  let userData = await User.updateOne(
+    { token: req.body.token },
+    {
+      $push: { clients: newDoc._id },
     }
+  );
+} else {
+  res.json({ result: false, error: "Client already exists" });
+}
   }
 });
 
@@ -106,3 +106,4 @@ router.get("/test/:token", (req, res) => {
 });
 
 module.exports = router;
+
