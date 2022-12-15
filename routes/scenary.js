@@ -9,26 +9,26 @@ router.get("/testroute", (req, res) => {
 });
 
 router.post("/new", (req, res) => {
-  // if (
-  //   !checkBody(req.body, [
-  //     "client",
-  //     "name",
-  //     // "type",
-  //     // "duration",
-  //     // "amount",
-  //     // "contratStart",
-  //     // "contratEnd",
-  //     // "residualValue",
-  //     // "links",
-  //     // "marge",
-  //   ])
-  // ) {
-  //   res.json({ result: false, error: "Champs vides ou manquants !" });
-  //   return;
-  // }
+  if (
+    !checkBody(req.body, [
+      "client",
+      "name",
+      "type",
+      "duration",
+      "amount",
+      "contratStart",
+      "contratEnd",
+      "residualValue",
+      "links",
+      "marge",
+    ])
+  ) {
+    res.json({ result: false, error: "Champs vides ou manquants !" });
+    return;
+  }
 
   // Check if the scenary has not already been registered
-  Scenary.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
+  Scenary.findOne({name: { $regex: new RegExp(req.body.name, 'i') }} ).then(
     (data) => {
       if (data === null) {
         const newScenary = new Scenary({
@@ -46,7 +46,7 @@ router.post("/new", (req, res) => {
         });
 
         newScenary.save().then((newScenary) => {
-          res.json({ result: true, name: newScenary.name });
+          res.json({ result: true, infosScenario: newScenary });
         });
       } else {
         // Scenary already exists in database
@@ -76,8 +76,8 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.delete("/:name", (req, res) => {
-  Scenary.deleteOne({ name: req.params.name }).then((data) => {
+router.delete("/:id", (req, res) => {
+  Scenary.deleteOne({ _id: req.params.id }).then((data) => {
     if (data) {
       res.json({ result: true, scenary: data });
     } else {
@@ -86,9 +86,8 @@ router.delete("/:name", (req, res) => {
   });
 });
 
-router.put("/update/:name", (req, res) => {
-  Scenary.updateOne(
-    { name: req.params.name },
+router.put("/update/:id", (req, res) => {
+  Scenary.updateOne({ _id: req.params.id },
     {
       client: req.body.client,
       name: req.body.name,
@@ -103,7 +102,7 @@ router.put("/update/:name", (req, res) => {
       marge: req.body.marge,
     }
   ).then(() => {
-    Scenary.findOne({ name: req.params.name }).then((data) => {
+    Scenary.findById({ _id: req.params.id }).then((data) => {
       if (data) {
         res.json({ result: true, scenary: data });
       } else {
