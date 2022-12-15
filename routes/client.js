@@ -111,7 +111,7 @@ router.get("/test/:token", (req, res) => {
     .populate("clients")
     .then((data) => {
       if (data) {
-        res.json({ userInfos: data });
+        res.json({result: true, userInfos: data });
       } else {
         res.json({ message: "rien trouvé" });
       }
