@@ -71,4 +71,42 @@ router.post("/addContrat", (req, res) => {
     }
   );
 });
+
+router.put("/update/:id", (req, res) => {
+  Contrat.updateOne(
+    { _id: req.params.id },
+    {
+      client: req.body.client,
+      name: req.body.name,
+      type: req.body.type,
+      duration: req.body.duration,
+      amount: req.body.amount,
+      creationDate: req.body.creationDate,
+      contratStart: req.body.contratStart,
+      contratEnd: req.body.contratEnd,
+      residualValue: req.body.residualValue,
+      links: req.body.links,
+      marge: req.body.marge,
+    }
+  ).then(() => {
+    Contrat.findById({ _id: req.params.id }).then((data) => {
+      if (data) {
+        res.json({ result: true, contrat: data });
+      } else {
+        res.json({ result: false, error: "Contrat introuvable" });
+      }
+    });
+  });
+});
+
+router.delete("/:id", (req, res) => {
+  Contrat.deleteOne({ _id: req.params.id }).then((data) => {
+    if (data) {
+      res.json({ result: true, contrat: data });
+    } else {
+      res.json({ result: false, error: "Contrat introuvable !" });
+    }
+  });
+});
+
 module.exports = router;

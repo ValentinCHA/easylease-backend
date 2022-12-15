@@ -9,23 +9,23 @@ router.get("/testroute", (req, res) => {
 });
 
 router.post("/new", (req, res) => {
-  // if (
-  //   !checkBody(req.body, [
-  //     "client",
-  //     "name",
-  //     // "type",
-  //     // "duration",
-  //     // "amount",
-  //     // "contratStart",
-  //     // "contratEnd",
-  //     // "residualValue",
-  //     // "links",
-  //     // "marge",
-  //   ])
-  // ) {
-  //   res.json({ result: false, error: "Champs vides ou manquants !" });
-  //   return;
-  // }
+  if (
+    !checkBody(req.body, [
+      "client",
+      "name",
+      "type",
+      "duration",
+      "amount",
+      "contratStart",
+      "contratEnd",
+      "residualValue",
+      "links",
+      "marge",
+    ])
+  ) {
+    res.json({ result: false, error: "Champs vides ou manquants !" });
+    return;
+  }
 
   // Check if the scenary has not already been registered
   Scenary.findOne({name: { $regex: new RegExp(req.body.name, 'i') }} ).then(
@@ -71,7 +71,7 @@ router.get("/:id", (req, res) => {
     if (data) {
       res.json({ result: true, scenary: data });
     } else {
-      res.json({ result: false, error: "Scenario pas trouver !" });
+      res.json({ result: false, error: "Scenario pas trouver via l'ID !" });
     }
   });
 });
