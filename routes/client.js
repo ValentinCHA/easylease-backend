@@ -57,6 +57,24 @@ router.post("/uploadClient", async (req, res) => {
       });
       // Cherche le user grace au token
 
+            // Sauvegarder le client créé 
+            newClient.save().then(newDoc => {
+                // console.log('nouveau client créé',newDoc);
+                // Cherche le user grace au token
+                // dans le store il existe uniquement que le token de l'utilisateur, l'id est une info trop importante par rapport a la secutité
+                User.updateOne({ token: req.body.token }, {
+                    $push: { clients: newDoc._id }
+                })
+                    .then(user => {
+                        //   ajout du client dans le tableau user
+
+                        console.log('user', user);
+                        res.json({ result: true, message: "Bienvenue!" });
+                    })
+            });
+        } else {
+
+            res.json({ result: false, error: 'Client already exists' });
       let userData = await User.updateOne(
         { token: req.body.token },
         {
@@ -69,16 +87,16 @@ router.post("/uploadClient", async (req, res) => {
   }
 });
 
-router.get("/test/:token", (req, res) => {
-  User.findOne({ token: req.params.token })
-    .populate("clients")
-    .then((data) => {
-      if (data) {
-        res.json({ userInfos: data });
-      } else {
-        res.json({ message: "rien trouvé" });
-      }
-    });
-});
+router.get('/test/:token', (req, res) => {
+    User.findOne({ token: req.params.token })
+        .populate('clients')
+        .then(data => {
+            if (data) {
+                res.json({ clientsInfos: data.clients, result: true })
+            } else {
+                res.json({ message: 'not found' })
+            }
+        })
+})
 
 module.exports = router;
