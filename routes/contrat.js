@@ -78,6 +78,7 @@ router.put("/update/:id", (req, res) => {
     {
       client: req.body.client,
       name: req.body.name,
+      interlocutor: req.body.interlocutor,
       type: req.body.type,
       duration: req.body.duration,
       amount: req.body.amount,

@@ -4,7 +4,7 @@ const interlocutorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   firstname: { type: String, required: true },
   poste: { type: String, required: false },
-  tel: { type: String, required: false },
+  phone: { type: String, required: false },
   email: { type: String, required: false },
   client: [
     { type: mongoose.Schema.Types.ObjectId, ref: "clients", required: true },
