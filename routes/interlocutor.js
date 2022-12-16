@@ -26,28 +26,38 @@ router.get("/:_id", (req, res) => {
 
 router.post("/addInterlocuteur", (req, res) => {
   if (
-    !checkBody(req.body, ["nom", "prenom", "poste", "phone", "mail", "client"])
+    !checkBody(req.body, [
+      "name",
+      "firstname",
+      "poste",
+      "tel",
+      "email",
+      "client",
+    ])
   ) {
     res.json({ result: false, error: "Champs vides ou manquants !" });
     return;
   }
 
   Interlocutor.findOne({
-    nom: { $regex: new RegExp(req.body.nom, "i") },
+    name: { $regex: new RegExp(req.body.name, "i") },
   }).then((data) => {
-    if (!data) {
+    console.log("FindOne Interlocuteur : ", data);
+    if (!data || data.name !== req.body.name) {
       const newInterlocutor = new Interlocutor({
-        nom: req.body.nom,
-        prenom: req.body.prenom,
+        name: req.body.name,
+        firstname: req.body.firstname,
         poste: req.body.poste,
-        phone: req.body.phone,
-        mail: req.body.mail,
+        tel: req.body.tel,
+        email: req.body.email,
         client: req.body.client,
       });
       newInterlocutor.save().then((newInterlocutor) => {
+        console.log({ "nouvel interlocuteur ajouté en db": newInterlocutor });
         res.json({ result: true, newInterlocutor: newInterlocutor });
       });
     } else {
+      console.log("Interlocuteur déjà existant ");
       res.json({ result: false, error: "Interlocuteur déjà existant !" });
     }
   });
