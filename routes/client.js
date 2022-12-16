@@ -17,16 +17,28 @@ router.get("/allClients", (req, res) => {
     });
 });
 
-router.get("/:clientName", (req, res) => {
-  Client.findOne({ name: req.params.clientName })
-    .populate("interlocutor")
-    .then((data) => {
-      if (data) {
-        res.json({ result: true, client: data });
-      } else {
-        res.json({ result: false, error: "Aucun client trouvé" });
-      }
-    });
+router.get('/id/:clientId', (req,res) => {
+  Client.findById({ _id : req.params.clientId})
+  .populate("interlocutor")
+  .then(data => {
+    if(data) {
+      res.json({result: true, client: data})
+    } else {
+      res.json({result: false, error: "Aucun client trouvé"})
+    }
+  })
+});
+
+router.get('/:clientName', (req,res) => {
+  Client.findOne({ name : req.params.clientName})
+  .populate("interlocutor")
+  .then(data => {
+    if(data) {
+      res.json({result: true, client: data})
+    } else {
+      res.json({result: false, error: "Aucun client trouvé"})
+    }
+  })
 });
 
 router.post("/uploadClient", async (req, res) => {
@@ -59,19 +71,19 @@ router.post("/uploadClient", async (req, res) => {
       // Sauvegarder le client créé
       let newDoc = await newClient.save()
 
-      // console.log('nouveau client créé',newDoc);
-      // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-      req.body.interlocutors.map(async (e) => {
-        const newInterlocutor = new Interlocutor({
-          client: newDoc._id,
-          tel: e.phoneNumber,
-          name: req.body.name,
-          firstname: e.firstname,
-          email: e.email,
-          poste: e.poste,
-        });
-        //sauvegarde le nouvel interlocuteur
-        let newInterloc = await newInterlocutor.save();
+  // console.log('nouveau client créé',newDoc);
+  // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+  req.body.interlocutors.map(async (e) => {
+    const newInterlocutor = new Interlocutor({
+      client: newDoc._id,
+      tel: e.phoneNumber,
+      name: e.name,
+      firstname: e.firstname,
+      email: e.email,
+      poste: e.poste,
+    });
+    //sauvegarde le nouvel interlocuteur
+    let newInterloc = await newInterlocutor.save();
 
         let clientToUpdate = await Client.updateOne(
           {
