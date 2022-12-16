@@ -14,12 +14,15 @@ router.post("/uploadClient", async (req, res) => {
       "numberOfEmployees",
       "chiffreAffaire",
     ])
-  ) {
+  ) 
+  {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   } else {
-    res.json({ result: true });
+   
     let clientData = await Client.findOne({ name: req.body.name });
+
+
     //vérifie l'existence ou non du client
     if (clientData === null) {
       const newClient = new Client({
@@ -30,7 +33,7 @@ router.post("/uploadClient", async (req, res) => {
         chiffre: req.body.chiffreAffaire,
       });
       // Sauvegarder le client créé
-      let newDoc = await newClient.save();
+      let newDoc = await newClient.save()
 
       // console.log('nouveau client créé',newDoc);
       // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
@@ -75,16 +78,17 @@ router.post("/uploadClient", async (req, res) => {
         } else {
 
             res.json({ result: false, error: 'Client already exists' });
-      let userData = await User.updateOne(
+     await User.updateOne(
         { token: req.body.token },
         {
           $push: { clients: newDoc._id },
         }
       );
-    } else {
-      res.json({ result: false, error: "Client already exists" });
-    }
-  }
+    
+}
+
+}
+
 });
 
 router.get('/test/:token', (req, res) => {
