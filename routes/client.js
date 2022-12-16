@@ -5,6 +5,30 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
+router.get("/allClients", (req, res) => {
+  Client.find({})
+    .populate("interlocutor")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, clients: data });
+      } else {
+        res.json({ result: false, error: "Aucun client trouvé" });
+      }
+    });
+});
+
+router.get("/:clientName", (req, res) => {
+  Client.findOne({ name: req.params.clientName })
+    .populate("interlocutor")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, client: data });
+      } else {
+        res.json({ result: false, error: "Aucun client trouvé" });
+      }
+    });
+});
+
 router.post("/uploadClient", async (req, res) => {
   if (
     !checkBody(req.body, [
@@ -78,17 +102,69 @@ router.post("/uploadClient", async (req, res) => {
         } else {
 
             res.json({ result: false, error: 'Client already exists' });
-     await User.updateOne(
-        { token: req.body.token },
-        {
-          $push: { clients: newDoc._id },
-        }
-      );
+    //  await User.updateOne(
+    //   let userData = await User.updateOne(
+    //     { token: req.body.token },
+    //     {
+    //       $push: { clients: newDoc._id },
+    //     }
+    //   );
     
 }
 
 }
 
+});
+
+router.get("/test/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate("clients")
+    .then((data) => {
+      if (data) {
+        res.json({ userInfos: data });
+      } else {
+        res.json({ message: "rien trouvé" });
+      }
+    });
+});
+
+router.post("/addInterlocutor", (req, res) => {
+  if (
+    !checkBody(req.body, [
+      "client",
+      "name",
+      "firstname",
+      "tel",
+      "poste",
+      "email",
+    ])
+  ) {
+    res.json({ result: false, error: "Missing or empty fields" });
+    return;
+  }
+
+  Client.findOne({ _id: req.body.client });
+  const newInterlocutor = new Interlocutor({
+    client: req.body.client,
+    tel: req.body.tel,
+    name: req.body.name,
+    firstname: req.body.firstname,
+    email: req.body.email,
+    poste: req.body.poste,
+  });
+  //sauvegarde le nouvel interlocuteur
+  newInterlocutor.save().then((data) => {
+    res.json({ result: true, data: data });
+    Client.updateOne(
+      {
+        _id: req.body.client,
+      },
+      {
+        $push: { interlocutor: data._id },
+      }
+      
+    ).then(data => res.json({ result : true, data: data}));
+  });
 });
 
 router.get('/test/:token', (req, res) => {

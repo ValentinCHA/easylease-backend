@@ -71,7 +71,7 @@ router.get("/:id", (req, res) => {
     if (data) {
       res.json({ result: true, scenary: data });
     } else {
-      res.json({ result: false, error: "Scenario pas trouver !" });
+      res.json({ result: false, error: "Scenario pas trouver via l'ID !" });
     }
   });
 });
