@@ -51,7 +51,7 @@ router.post("/addContrat", (req, res) => {
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
-          interlocutor: "6399989d3ef49dd055a82f28",
+          interlocutor: req.body.interlocutor,
           type: req.body.type,
           duration: req.body.duration,
           amount: req.body.amount,

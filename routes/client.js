@@ -17,6 +17,18 @@ router.get('/allClients', (req,res) => {
   })
 });
 
+router.get('/id/:clientId', (req,res) => {
+  Client.findById({ _id : req.params.clientId})
+  .populate("interlocutor")
+  .then(data => {
+    if(data) {
+      res.json({result: true, client: data})
+    } else {
+      res.json({result: false, error: "Aucun client trouvé"})
+    }
+  })
+});
+
 router.get('/:clientName', (req,res) => {
   Client.findOne({ name : req.params.clientName})
   .populate("interlocutor")
@@ -62,7 +74,7 @@ router.post("/uploadClient", async (req, res) => {
     const newInterlocutor = new Interlocutor({
       client: newDoc._id,
       tel: e.phoneNumber,
-      name: req.body.name,
+      name: e.name,
       firstname: e.firstname,
       email: e.email,
       poste: e.poste,
