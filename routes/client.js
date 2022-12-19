@@ -76,7 +76,7 @@ router.post("/uploadClient", async (req, res) => {
   req.body.interlocutors.map(async (e) => {
     const newInterlocutor = new Interlocutor({
       client: newDoc._id,
-      tel: e.phoneNumber,
+      phone: e.phoneNumber,
       name: e.name,
       firstname: e.firstname,
       email: e.email,
@@ -112,7 +112,7 @@ router.post("/addInterlocutor", (req, res) => {
       "client",
       "name",
       "firstname",
-      "tel",
+      "phone",
       "poste",
       "email",
     ])
@@ -124,7 +124,7 @@ router.post("/addInterlocutor", (req, res) => {
   Client.findOne({ _id: req.body.client });
   const newInterlocutor = new Interlocutor({
     client: req.body.client,
-    tel: req.body.tel,
+    phone: req.body.phone,
     name: req.body.name,
     firstname: req.body.firstname,
     email: req.body.email,
