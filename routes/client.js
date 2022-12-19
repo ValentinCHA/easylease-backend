@@ -17,28 +17,28 @@ router.get("/allClients", (req, res) => {
     });
 });
 
-router.get("/id/:clientId", (req, res) => {
-  Client.findById({ _id: req.params.clientId })
-    .populate("interlocutor")
-    .then((data) => {
-      if (data) {
-        res.json({ result: true, client: data });
-      } else {
-        res.json({ result: false, error: "Aucun client trouvé" });
-      }
-    });
+router.get('/id/:clientId', (req,res) => {
+  Client.findById({ _id : req.params.clientId})
+  .populate("interlocutor")
+  .then(data => {
+    if(data) {
+      res.json({result: true, client: data})
+    } else {
+      res.json({result: false, error: "Aucun client trouvé"})
+    }
+  })
 });
 
-router.get("/:clientName", (req, res) => {
-  Client.findOne({ name: req.params.clientName })
-    .populate("interlocutor")
-    .then((data) => {
-      if (data) {
-        res.json({ result: true, client: data });
-      } else {
-        res.json({ result: false, error: "Aucun client trouvé" });
-      }
-    });
+router.get('/:clientName', (req,res) => {
+  Client.findOne({ name : req.params.clientName})
+  .populate("interlocutor")
+  .then(data => {
+    if(data) {
+      res.json({result: true, client: data})
+    } else {
+      res.json({result: false, error: "Aucun client trouvé"})
+    }
+  })
 });
 
 router.post("/uploadClient", async (req, res) => {
@@ -50,11 +50,14 @@ router.post("/uploadClient", async (req, res) => {
       "numberOfEmployees",
       "chiffreAffaire",
     ])
-  ) {
+  ) 
+  {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   } else {
+   
     let clientData = await Client.findOne({ name: req.body.name });
+
 
     //vérifie l'existence ou non du client
     if (clientData === null) {
@@ -66,21 +69,21 @@ router.post("/uploadClient", async (req, res) => {
         chiffre: req.body.chiffreAffaire,
       });
       // Sauvegarder le client créé
-      let newDoc = await newClient.save();
+      let newDoc = await newClient.save()
 
-      // console.log('nouveau client créé',newDoc);
-      // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-      req.body.interlocutors.map(async (e) => {
-        const newInterlocutor = new Interlocutor({
-          client: newDoc._id,
-          tel: e.phoneNumber,
-          name: e.name,
-          firstname: e.firstname,
-          email: e.email,
-          poste: e.poste,
-        });
-        //sauvegarde le nouvel interlocuteur
-        let newInterloc = await newInterlocutor.save();
+  // console.log('nouveau client créé',newDoc);
+  // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+  req.body.interlocutors.map(async (e) => {
+    const newInterlocutor = new Interlocutor({
+      client: newDoc._id,
+      tel: e.phoneNumber,
+      name: e.name,
+      firstname: e.firstname,
+      email: e.email,
+      poste: e.poste,
+    });
+    //sauvegarde le nouvel interlocuteur
+    let newInterloc = await newInterlocutor.save();
 
         let clientToUpdate = await Client.updateOne(
           {
@@ -91,26 +94,16 @@ router.post("/uploadClient", async (req, res) => {
           }
         );
       });
-      await User.updateOne(
+          await User.updateOne(
         { token: req.body.token },
         {
           $push: { clients: newDoc._id },
         }
       );
-    }
-  }
-});
+}
 
-router.get("/test/:token", (req, res) => {
-  User.findOne({ token: req.params.token })
-    .populate("clients")
-    .then((data) => {
-      if (data) {
-        res.json({ userInfos: data });
-      } else {
-        res.json({ message: "rien trouvé" });
-      }
-    });
+}
+
 });
 
 router.post("/addInterlocutor", (req, res) => {
@@ -119,7 +112,7 @@ router.post("/addInterlocutor", (req, res) => {
       "client",
       "name",
       "firstname",
-      "phone",
+      "tel",
       "poste",
       "email",
     ])
@@ -130,51 +123,39 @@ router.post("/addInterlocutor", (req, res) => {
 
   Client.findOne({ _id: req.body.client });
   const newInterlocutor = new Interlocutor({
+    client: req.body.client,
+    tel: req.body.tel,
     name: req.body.name,
     firstname: req.body.firstname,
-    poste: req.body.poste,
-    phone: req.body.phone,
     email: req.body.email,
-    client: req.body.client,
+    poste: req.body.poste,
   });
   //sauvegarde le nouvel interlocuteur
   newInterlocutor.save().then((data) => {
-    res.json({ result: true, data: data });
-    Client.updateOne(
-      {
-        _id: req.body.client,
-      },
-      {
-        $push: { interlocutor: data._id },
+    Client.updateOne({ _id: req.body.client, },{$push: { interlocutor: data._id }})
+    // .populate('interlocutor') //
+    .then(() => { Client.findById({ _id: req.body.client })
+    .populate('interlocutor').then(data => {
+      if (data) {
+        res.json({ result : true, data: data});
+      } else {
+        res.json({result: false, error: 'Client pas update avec le new interloc !'})
       }
-    ).then((data) => {
-      console.log("POST DB CLIENT ADD INTERLOCUTEUR =>", data);
-    });
+    })
+    })
   });
 });
 
-router.get("/test/:token", (req, res) => {
-  User.findOne({ token: req.params.token })
-    .populate("clients")
-    .then((data) => {
-      if (data) {
-        res.json({ clientsInfos: data.clients, result: true });
-      } else {
-        res.json({ message: "not found" });
-      }
-    });
+router.get('/test/:token', (req, res) => {
+    User.findOne({ token: req.params.token })
+        .populate('clients')
+        .then(data => {
+            if (data) {
+                res.json({ result: true, clientsInfos: data})
+            } else {
+                res.json({ message: 'not found' })
+            }
+        })
 });
-
-// DOUBLON CONSERVE AU CAS OU
-// .then(user => {
-//   //   ajout du client dans le tableau user
-
-//   console.log('user', user);
-//   res.json({ result: true, message: "Bienvenue!" });
-// })
-// });
-// } else {
-
-// res.json({ result: false, error: 'Client already exists' });
 
 module.exports = router;
