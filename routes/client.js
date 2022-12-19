@@ -5,18 +5,6 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
-router.get('/test/:token', (req, res) => {
-  User.findOne({ token: req.params.token })
-      .populate('clients')
-      .then(data => {
-          if (data) {
-              res.json({ result: true, clientsInfos: data})
-          } else {
-              res.json({ message: 'pas trouvé' })
-          }
-      })
-});
-
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -28,7 +16,6 @@ router.get("/allClients", (req, res) => {
       }
     });
 });
-
 
 router.get('/id/:clientId', (req,res) => {
   Client.findById({ _id : req.params.clientId})
@@ -127,6 +114,18 @@ router.post("/uploadClient", async (req, res) => {
   }
 });
 
+router.get("/test/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate("clients")
+    .then((data) => {
+      if (data) {
+        res.json({ userInfos: data });
+      } else {
+        res.json({ message: "rien trouvé" });
+      }
+    });
+});
+
 router.post("/addInterlocutor", (req, res) => {
   if (
     !checkBody(req.body, [
@@ -167,5 +166,16 @@ router.post("/addInterlocutor", (req, res) => {
   });
 });
 
+router.get('/test/:token', (req, res) => {
+    User.findOne({ token: req.params.token })
+        .populate('clients')
+        .then(data => {
+            if (data) {
+                res.json({ result: true, clientsInfos: data})
+            } else {
+                res.json({ message: 'not found' })
+            }
+        })
+});
 
 module.exports = router;
