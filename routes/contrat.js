@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const { checkBody } = require("../modules/checkBody");
 
+const User = require('../models/users')
+
 const Contrat = require("../models/contrat");
 const Interlocutor = require("../models/interlocutor");
 
@@ -13,6 +15,17 @@ router.get("/allContrat", (req, res) => {
       res.json({ result: false, error: "problème du get" });
     }
   });
+});
+router.get("/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate("contrats")
+    .then((data) => {
+      if (data) {
+        res.json({result: true, userInfos: data });
+      } else {
+        res.json({ message: "rien trouvé" });
+      }
+    });
 });
 
 router.get("/:_id", (req, res) => {
