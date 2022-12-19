@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 const contratSchema = mongoose.Schema({
   client: { type: mongoose.Schema.Types.ObjectId, ref: "clients" },
   name: String,
-  interlocutor: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "interlocutors" },
-  ],
+  interlocutor: { type: mongoose.Schema.Types.ObjectId, ref: "interlocutors" },
   type: String,
   duration: Number,
   amount: Number,
