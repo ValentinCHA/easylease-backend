@@ -70,7 +70,7 @@ router.post("/addInterlocuteur", (req, res) => {
         client: req.body.client, // Utilisation de req.body.client comme un tableau d'objets ObjectId valides
       });
       newInterlocutor.save().then((newInterlocutor) => {
-        console.log({ "nouvel interlocuteur ajouté en db": newInterlocutor });
+        console.log({ "POST INTERLOCUTOR => ": newInterlocutor });
         res.json({ result: true, newInterlocutor: newInterlocutor });
       });
     } else {
@@ -79,44 +79,5 @@ router.post("/addInterlocuteur", (req, res) => {
     }
   });
 });
-
-// router.post("/addInterlocuteur", (req, res) => {
-//   if (
-//     !checkBody(req.body, [
-//       "name",
-//       "firstname",
-//       "poste",
-//       "phone",
-//       "email",
-//       "client",
-//     ])
-//   ) {
-//     res.json({ result: false, error: "Champs vides ou manquants !" });
-//     return;
-//   }
-
-//   Interlocutor.findOne({
-//     name: { $regex: new RegExp(req.body.name, "i") },
-//   }).then((data) => {
-//     console.log("FindOne Interlocuteur : ", data);
-//     if (!data || data.name !== req.body.name) {
-//       const newInterlocutor = new Interlocutor({
-//         name: req.body.name,
-//         firstname: req.body.firstname,
-//         poste: req.body.poste,
-//         phone: req.body.phone,
-//         email: req.body.email,
-//         client: [req.body.client],
-//       });
-//       newInterlocutor.save().then((newInterlocutor) => {
-//         console.log({ "nouvel interlocuteur ajouté en db": newInterlocutor });
-//         res.json({ result: true, newInterlocutor: newInterlocutor });
-//       });
-//     } else {
-//       console.log("Interlocuteur déjà existant ");
-//       res.json({ result: false, error: "Interlocuteur déjà existant !" });
-//     }
-//   });
-// });
 
 module.exports = router;

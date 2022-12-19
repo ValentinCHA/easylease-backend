@@ -20,9 +20,5 @@
   "devDependencies": {
     "jest": "^28.1.1",
     "supertest": "^6.2.3"
-  },
-  "main": "index.js",
-  "repository": "https://github.com/ValentinCHA/easylease-backend.git",
-  "author": "SBTH29 <115708643+SBTH29@users.noreply.github.com>",
-  "license": "MIT"
+  }
 }
