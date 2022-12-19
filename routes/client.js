@@ -5,6 +5,8 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
+
+
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -112,18 +114,6 @@ router.post("/uploadClient", async (req, res) => {
     // Envoie une réponse négative au client si le client existe déjà
     res.json({ result: false, error: "Client already exists" });
   }
-});
-
-router.get("/test/:token", (req, res) => {
-  User.findOne({ token: req.params.token })
-    .populate("clients")
-    .then((data) => {
-      if (data) {
-        res.json({ userInfos: data });
-      } else {
-        res.json({ message: "rien trouvé" });
-      }
-    });
 });
 
 router.post("/addInterlocutor", (req, res) => {
