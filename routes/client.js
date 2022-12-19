@@ -168,4 +168,12 @@ router.get('/test/:token', (req, res) => {
         })
 });
 
+// router.get('/clients/encore', (req,res) => {
+//   Client.find({})
+//   .then(data => {
+//     console.log("JE SUIS LES DATA =>>>>", data);
+//     res.json({resul: true, client: data})
+//   })
+// })
+
 module.exports = router;
