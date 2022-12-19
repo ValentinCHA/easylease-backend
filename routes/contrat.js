@@ -81,12 +81,15 @@ router.post("/addContrat", (req, res) => {
         newContrat.save().then((newContrat) => {
           res.json({ result: true, contrat: newContrat });
         });
+         User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },}
+        );
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
     }
   );
 });
+
 
 // :id correspond à l'ID du contrat
 router.post("/addInterlocutor/:id", (req, res) => {

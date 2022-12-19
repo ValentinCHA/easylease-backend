@@ -99,11 +99,7 @@ router.post("/uploadClient", async (req, res) => {
     });
 
     // Ajoute le client à l'utilisateur associé au token
-    await User.updateOne(
-      { token: req.body.token },
-      {
-        $push: { clients: newDoc._id },
-      }
+    await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
     );
 
     // Envoie une réponse positive au client
