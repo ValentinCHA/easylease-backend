@@ -55,20 +55,22 @@ router.post("/uploadClient", async (req, res) => {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   } else {
-
+   
     let clientData = await Client.findOne({ name: req.body.name });
 
-//vérifie l'existence ou non du client
-if (clientData === null) {
-  const newClient = new Client({
-    name: req.body.name,
-    address: req.body.address,
-    numberOfEmployees: req.body.numberOfEmployees,
-    clientBirth: req.body.clientBirth,
-    chiffre: req.body.chiffreAffaire,
-  });
-  // Sauvegarder le client créé
-  let newDoc = await newClient.save()
+
+    //vérifie l'existence ou non du client
+    if (clientData === null) {
+      const newClient = new Client({
+        name: req.body.name,
+        address: req.body.address,
+        numberOfEmployees: req.body.numberOfEmployees,
+        clientBirth: req.body.clientBirth,
+        chiffre: req.body.chiffreAffaire,
+      });
+      // Sauvegarder le client créé
+      let newDoc = await newClient.save()
+
   // console.log('nouveau client créé',newDoc);
   // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
   req.body.interlocutors.map(async (e) => {
@@ -83,21 +85,21 @@ if (clientData === null) {
     //sauvegarde le nouvel interlocuteur
     let newInterloc = await newInterlocutor.save();
 
-    let clientToUpdate = await Client.updateOne(
-      {
-        _id: newDoc._id,
-      },
-      {
-        $push: { interlocutor: newInterloc._id },
-      }
-    );
-  });
-      await User.updateOne(
-    { token: req.body.token },
-    {
-      $push: { clients: newDoc._id },
-    }
-  );
+        let clientToUpdate = await Client.updateOne(
+          {
+            _id: newDoc._id,
+          },
+          {
+            $push: { interlocutor: newInterloc._id },
+          }
+        );
+      });
+          await User.updateOne(
+        { token: req.body.token },
+        {
+          $push: { clients: newDoc._id },
+        }
+      );
 }
 
 }
