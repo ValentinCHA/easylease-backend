@@ -106,18 +106,6 @@ router.post("/uploadClient", async (req, res) => {
 
 });
 
-router.get("/test/:token", (req, res) => {
-  User.findOne({ token: req.params.token })
-    .populate("clients")
-    .then((data) => {
-      if (data) {
-        res.json({ userInfos: data });
-      } else {
-        res.json({ message: "rien trouvé" });
-      }
-    });
-});
-
 router.post("/addInterlocutor", (req, res) => {
   if (
     !checkBody(req.body, [
@@ -144,16 +132,17 @@ router.post("/addInterlocutor", (req, res) => {
   });
   //sauvegarde le nouvel interlocuteur
   newInterlocutor.save().then((data) => {
-    res.json({ result: true, data: data });
-    Client.updateOne(
-      {
-        _id: req.body.client,
-      },
-      {
-        $push: { interlocutor: data._id },
+    Client.updateOne({ _id: req.body.client, },{$push: { interlocutor: data._id }})
+    // .populate('interlocutor') //
+    .then(() => { Client.findById({ _id: req.body.client })
+    .populate('interlocutor').then(data => {
+      if (data) {
+        res.json({ result : true, data: data});
+      } else {
+        res.json({result: false, error: 'Client pas update avec le new interloc !'})
       }
-      
-    ).then(data => res.json({ result : true, data: data}));
+    })
+    })
   });
 });
 
@@ -162,26 +151,11 @@ router.get('/test/:token', (req, res) => {
         .populate('clients')
         .then(data => {
             if (data) {
-                res.json({ clientsInfos: data.clients, result: true })
+                res.json({ result: true, clientsInfos: data})
             } else {
                 res.json({ message: 'not found' })
             }
         })
 });
-
-
-
-
-// DOUBLON CONSERVE AU CAS OU 
-// .then(user => {
-//   //   ajout du client dans le tableau user
-
-//   console.log('user', user);
-//   res.json({ result: true, message: "Bienvenue!" });
-// })
-// });
-// } else {
-
-// res.json({ result: false, error: 'Client already exists' });
 
 module.exports = router;
