@@ -51,7 +51,7 @@ router.post("/addContrat", (req, res) => {
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
-          interlocutor: "6399989d3ef49dd055a82f28",
+          interlocutor: req.body.interlocutor,
           type: req.body.type,
           duration: req.body.duration,
           amount: req.body.amount,
@@ -78,6 +78,7 @@ router.put("/update/:id", (req, res) => {
     {
       client: req.body.client,
       name: req.body.name,
+      interlocutor: req.body.interlocutor,
       type: req.body.type,
       duration: req.body.duration,
       amount: req.body.amount,
@@ -91,12 +92,39 @@ router.put("/update/:id", (req, res) => {
   ).then(() => {
     Contrat.findById({ _id: req.params.id }).then((data) => {
       if (data) {
+        console.log({ "PUT DB CONTRAT =>": data });
         res.json({ result: true, contrat: data });
       } else {
+        console.log({ "FAILED PUT DB CONTRAT =>": data });
         res.json({ result: false, error: "Contrat introuvable" });
       }
     });
   });
+});
+
+router.put("/updateInterlocutor/:id", (req, res) => {
+  Contrat.updateOne(
+    { _id: req.params.id },
+    {
+      $push: { interlocutor: req.body.interlocutor },
+    }
+  )
+    .then(() => {
+      Contrat.findById({ _id: req.params.id })
+        .populate("interlocutor")
+        .then((data) => {
+          if (data) {
+            res.json({ result: true, contrat: data });
+            console.log({ "PUT DB CONTRAT =>": data });
+          } else {
+            res.json({ result: false, error: "Contrat introuvable" });
+            console.log({ "FAILED PUT DB CONTRAT =>": data });
+          }
+        });
+    })
+    .catch((error) => {
+      res.json({ result: false, error: error });
+    });
 });
 
 router.delete("/:id", (req, res) => {
