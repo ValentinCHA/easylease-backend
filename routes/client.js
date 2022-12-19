@@ -5,6 +5,18 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
+router.get('/test/:token', (req, res) => {
+  User.findOne({ token: req.params.token })
+      .populate('clients')
+      .then(data => {
+          if (data) {
+              res.json({ result: true, clientsInfos: data})
+          } else {
+              res.json({ message: 'pas trouvé' })
+          }
+      })
+});
+
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -16,6 +28,7 @@ router.get("/allClients", (req, res) => {
       }
     });
 });
+
 
 router.get('/id/:clientId', (req,res) => {
   Client.findById({ _id : req.params.clientId})
@@ -42,6 +55,7 @@ router.get('/:clientName', (req,res) => {
 });
 
 router.post("/uploadClient", async (req, res) => {
+  // Vérifie si tous les champs sont remplis et existent
   if (
     !checkBody(req.body, [
       "name",
@@ -49,61 +63,68 @@ router.post("/uploadClient", async (req, res) => {
       "address",
       "numberOfEmployees",
       "chiffreAffaire",
+      "token", // Ajout du champ "token"
     ])
-  ) 
-  {
+  ) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
-  } else {
-   
-    let clientData = await Client.findOne({ name: req.body.name });
+  }
 
+  // Vérifie l'existence du client
+  let clientData = await Client.findOne({ name: req.body.name });
 
-    //vérifie l'existence ou non du client
-    if (clientData === null) {
-      const newClient = new Client({
-        name: req.body.name,
-        address: req.body.address,
-        numberOfEmployees: req.body.numberOfEmployees,
-        clientBirth: req.body.clientBirth,
-        chiffre: req.body.chiffreAffaire,
-      });
-      // Sauvegarder le client créé
-      let newDoc = await newClient.save()
-
-  // console.log('nouveau client créé',newDoc);
-  // crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-  req.body.interlocutors.map(async (e) => {
-    const newInterlocutor = new Interlocutor({
-      client: newDoc._id,
-      phone: e.phoneNumber,
-      name: e.name,
-      firstname: e.firstname,
-      email: e.email,
-      poste: e.poste,
+  if (clientData === null) {
+    // Crée un nouveau client
+    const newClient = new Client({
+      name: req.body.name,
+      address: req.body.address,
+      numberOfEmployees: req.body.numberOfEmployees,
+      clientBirth: req.body.clientBirth,
+      chiffre: req.body.chiffreAffaire,
     });
-    //sauvegarde le nouvel interlocuteur
-    let newInterloc = await newInterlocutor.save();
 
-        let clientToUpdate = await Client.updateOne(
-          {
-            _id: newDoc._id,
-          },
-          {
-            $push: { interlocutor: newInterloc._id },
-          }
-        );
+    // Sauvegarde le client créé
+    let newDoc = await newClient.save();
+
+    // Crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+    req.body.interlocutors.map(async (e) => {
+      const newInterlocutor = new Interlocutor({
+        client: newDoc._id,
+        phone: e.phoneNumber,
+        name: e.name,
+        firstname: e.firstname,
+        email: e.email,
+        poste: e.poste,
       });
-          await User.updateOne(
-        { token: req.body.token },
+
+      // Sauvegarde le nouvel interlocuteur
+      let newInterloc = await newInterlocutor.save();
+
+      // Met à jour le client avec le nouvel interlocuteur
+      let clientToUpdate = await Client.updateOne(
         {
-          $push: { clients: newDoc._id },
+          _id: newDoc._id,
+        },
+        {
+          $push: { interlocutor: newInterloc._id },
         }
       );
-}
+    });
 
-}
+    // Ajoute le client à l'utilisateur associé au token
+    await User.updateOne(
+      { token: req.body.token },
+      {
+        $push: { clients: newDoc._id },
+      }
+    );
 
+    // Envoie une réponse positive au client
+    res.json({ result: true });
+  } else {
+    // Envoie une réponse négative au client si le client existe déjà
+    res.json({ result: false, error: "Client already exists" });
+  }
 });
 
 router.post("/addInterlocutor", (req, res) => {
@@ -146,16 +167,5 @@ router.post("/addInterlocutor", (req, res) => {
   });
 });
 
-router.get('/test/:token', (req, res) => {
-    User.findOne({ token: req.params.token })
-        .populate('clients')
-        .then(data => {
-            if (data) {
-                res.json({ result: true, clientsInfos: data})
-            } else {
-                res.json({ message: 'not found' })
-            }
-        })
-});
 
 module.exports = router;
