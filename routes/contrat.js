@@ -76,13 +76,15 @@ router.post("/addContrat", (req, res) => {
           contratEnd: req.body.contratEnd,
           residualValue: req.body.residualValue,
           links: req.body.links,
-          marge: 10,
+          marge: req.body.marge,
         });
         newContrat.save().then((newContrat) => {
-          res.json({ result: true, contrat: newContrat });
+          User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },})
+          .then(data => {
+            console.log("JE SUIS LES DATA", data);
+            res.json({ result: true, contrat: newContrat });
+          })
         });
-         User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },}
-        );
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
