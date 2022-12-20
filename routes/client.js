@@ -5,8 +5,6 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
-
-
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -101,7 +99,11 @@ router.post("/uploadClient", async (req, res) => {
     });
 
     // Ajoute le client à l'utilisateur associé au token
-    await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
+    await User.updateOne(
+      { token: req.body.token },
+      {
+        $push: { clients: newDoc._id },
+      }
     );
 
     // Envoie une réponse positive au client
@@ -110,6 +112,18 @@ router.post("/uploadClient", async (req, res) => {
     // Envoie une réponse négative au client si le client existe déjà
     res.json({ result: false, error: "Client already exists" });
   }
+});
+
+router.get("/test/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate("clients")
+    .then((data) => {
+      if (data) {
+        res.json({ userInfos: data });
+      } else {
+        res.json({ message: "rien trouvé" });
+      }
+    });
 });
 
 router.post("/addInterlocutor", (req, res) => {
@@ -163,13 +177,5 @@ router.get('/test/:token', (req, res) => {
             }
         })
 });
-
-// router.get('/clients/encore', (req,res) => {
-//   Client.find({})
-//   .then(data => {
-//     console.log("JE SUIS LES DATA =>>>>", data);
-//     res.json({resul: true, client: data})
-//   })
-// })
 
 module.exports = router;

@@ -63,7 +63,7 @@ router.post("/addContrat", (req, res) => {
 
   Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
     (data) => {
-      if (!data) {
+      if (!data){
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
@@ -81,8 +81,7 @@ router.post("/addContrat", (req, res) => {
         newContrat.save().then((newContrat) => {
           res.json({ result: true, contrat: newContrat });
         });
-         User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },}
-        );
+        // User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },});
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
