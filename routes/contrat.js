@@ -9,18 +9,23 @@ const Contrat = require("../models/contrat");
 const Interlocutor = require("../models/interlocutor");
 
 router.get("/allContrat", (req, res) => {
-  Contrat.find().then((data) => {
-    if (data) {
-      res.json({ result: true, contrat: data });
-    } else {
-      res.json({ result: false, error: "problème du get" });
-    }
-  });
+  Contrat.find()
+    .populate("client")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, contrat: data });
+      } else {
+        res.json({ result: false, error: "problème du get" });
+      }
+    });
 });
 
 router.get("/:token", (req, res) => {
   User.findOne({ token: req.params.token })
-    .populate("contrats")
+    .populate({
+      path: 'contrats',
+      populate: {path: 'client'}
+    })
     .then((data) => {
       if (data) {
         res.json({ result: true, userInfos: data });
@@ -43,23 +48,23 @@ router.get("/contrat/:_id", (req, res) => {
 });
 
 router.post("/addContrat", (req, res) => {
-  // if (
-  //   !checkBody(req.body, [
-  //     "client",
-  //     "name",
-  //     "type",
-  //     "duration",
-  //     "amount",
-  //     "creationDate",
-  //     "contratStart",
-  //     "contratEnd",
-  //     "residualValue",
-  //     "links",
-  //   ])
-  // ) {
-  //   res.json({ result: false, error: "Champs vides ou manquants !" });
-  //   return;
-  // }
+  if (
+    !checkBody(req.body, [
+      "client",
+      "name",
+      "type",
+      "duration",
+      "amount",
+      "creationDate",
+      "contratStart",
+      "contratEnd",
+      "residualValue",
+      "links",
+    ])
+  ) {
+    res.json({ result: false, error: "Champs vides ou manquants !" });
+    return;
+  }
 
   Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
     (data) => {
@@ -85,6 +90,10 @@ router.post("/addContrat", (req, res) => {
             res.json({ result: true, contrat: newContrat });
           })
         });
+        User.updateOne(
+          { token: req.body.token },
+          { $push: { contrats: newContrat._id } }
+        );
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
@@ -92,9 +101,8 @@ router.post("/addContrat", (req, res) => {
   );
 });
 
-
 // :id correspond à l'ID du contrat
-router.post("/addInterlocutor/:id", (req, res) => {
+router.put("/addInterlocutor/:id", (req, res) => {
   if (
     !checkBody(req.body, [
       "name",
@@ -147,59 +155,43 @@ router.post("/addInterlocutor/:id", (req, res) => {
   });
 });
 
-router.put("/updateInterlocutor/:id", (req, res) => {
+router.put("/updateContrat/:id", (req, res) => {
   Contrat.updateOne(
     { _id: req.params.id },
-
-    { interlocutor: req.body.interlocutor }
-  )
-    .then(() => {
-      Contrat.findById({ _id: req.params.id })
-        .populate("interlocutor")
-        .then((data) => {
-          if (data) {
-            res.json({ result: true, contrat: data });
-            console.log({ "PUT DB CONTRAT =>": data });
-          } else {
-            res.json({ result: false, error: "Contrat introuvable" });
-            console.log({ "FAILED PUT DB CONTRAT =>": data });
-          }
-        });
-    })
-    .catch((error) => {
-      res.json({ result: false, error: error });
+    {
+      type: req.body.type,
+      amount: req.body.amount,
+      marge: req.body.marge,
+      duration: req.body.duration,
+      contratStart: req.body.contratStart,
+      contratEnd: req.body.contratEnd,
+      residualValue: req.body.residualValue,
+    }
+  ).then(() => {
+    Contrat.findById({ _id: req.params.id }).then((data) => {
+      if (data) {
+        res.json({ result: true, contrat: data });
+      } else {
+        res.json({ result: false, error: "Contrat pas trouver !" });
+      }
     });
+  });
 });
 
-// router.put("/update/:id", (req, res) => {
-//   Contrat.updateOne(
-//     { _id: req.params.id },
-//     {
-//       client: req.body.client,
-//       name: req.body.name,
-//       interlocutor: req.body.interlocutor,
-//       type: req.body.type,
-//       duration: req.body.duration,
-//       amount: req.body.amount,
-//       creationDate: req.body.creationDate,
-//       contratStart: req.body.contratStart,
-//       contratEnd: req.body.contratEnd,
-//       residualValue: req.body.residualValue,
-//       links: req.body.links,
-//       marge: req.body.marge,
-//     }
-//   ).then(() => {
-//     Contrat.findById({ _id: req.params.id }).then((data) => {
-//       if (data) {
-//         console.log({ "PUT DB CONTRAT =>": data });
-//         res.json({ result: true, contrat: data });
-//       } else {
-//         console.log({ "FAILED PUT DB CONTRAT =>": data });
-//         res.json({ result: false, error: "Contrat introuvable" });
-//       }
-//     });
-//   });
-// });
+router.put("/updateLink/:id", (req, res) => {
+  Contrat.updateOne({ _id: req.params.id }, { links: req.body.links }).then(
+    () => {
+      Contrat.findById({ _id: req.params.id }).then((data) => {
+        console.log("INFO ROUTE LINK =>", data);
+        if (data) {
+          res.json({ result: true, contrat: data });
+        } else {
+          res.json({ result: false, error: "Contrat pas trouver !" });
+        }
+      });
+    }
+  );
+});
 
 router.delete("/:id", (req, res) => {
   Contrat.deleteOne({ _id: req.params.id }).then((data) => {

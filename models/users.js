@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
   token: String,
   isAdmin: Boolean,
   clients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'clients' }],
-  contrats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'contrats' }]
+  contrats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'contrats' }],
+  scenary: [{ type: mongoose.Schema.Types.ObjectId, ref: 'scenary' }]
 });
 
 const User = mongoose.model("users", userSchema);
