@@ -20,7 +20,10 @@ router.get("/allContrat", (req, res) => {
 
 router.get("/:token", (req, res) => {
   User.findOne({ token: req.params.token })
-    .populate("contrats")
+    .populate({
+      path: 'contrats',
+      populate: {path: 'client'}
+    })
     .then((data) => {
       if (data) {
         res.json({ result: true, userInfos: data });
@@ -63,7 +66,7 @@ router.post("/addContrat", (req, res) => {
 
   Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
     (data) => {
-      if (!data){
+      if (!data) {
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
@@ -76,19 +79,21 @@ router.post("/addContrat", (req, res) => {
           contratEnd: req.body.contratEnd,
           residualValue: req.body.residualValue,
           links: req.body.links,
-          marge: 10,
+          marge: req.body.marge,
         });
         newContrat.save().then((newContrat) => {
-          res.json({ result: true, contrat: newContrat });
+          User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },})
+          .then(data => {
+            console.log("JE SUIS LES DATA", data);
+            res.json({ result: true, contrat: newContrat });
+          })
         });
-        // User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },});
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
     }
   );
 });
-
 
 // :id correspond à l'ID du contrat
 router.post("/addInterlocutor/:id", (req, res) => {
