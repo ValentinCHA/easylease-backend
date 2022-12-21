@@ -8,8 +8,8 @@ const clientSchema = mongoose.Schema({
   chiffre: String,
   // links: String, ****a ajouter ****
   interlocutor: [{ type: mongoose.Schema.Types.ObjectId, ref: "interlocutors" }],
-  // scenary: { type: mongoose.Schema.Types.ObjectId, ref: 'scenary' },
-  //contrat:{ type: mongoose.Schema.Types.ObjectId, ref: 'contrats' },
+  // scenary: [{ type: mongoose.Schema.Types.ObjectId, ref: 'scenary' }],
+  contrats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'contrats' }],
 });
 
 const Client = mongoose.model("clients", clientSchema);
