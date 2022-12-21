@@ -26,7 +26,7 @@ router.post('/signup', (req, res) => {
         password: hash,
         poste: "Developpeur",
         token: uid2(32),
-        isAdmin: true,
+      
       });
 
       newUser.save().then(newDoc => {
