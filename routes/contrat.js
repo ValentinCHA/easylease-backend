@@ -23,8 +23,8 @@ router.get("/allContrat", (req, res) => {
 router.get("/:token", (req, res) => {
   User.findOne({ token: req.params.token })
     .populate({
-      path: 'contrats',
-      populate: {path: 'client'}
+      path: "contrats",
+      populate: { path: "client" },
     })
     .then((data) => {
       if (data) {
@@ -84,11 +84,13 @@ router.post("/addContrat", (req, res) => {
           marge: req.body.marge,
         });
         newContrat.save().then((newContrat) => {
-          User.updateOne({ token: req.body.token },{$push: { contrats: newContrat._id },})
-          .then(data => {
+          User.updateOne(
+            { token: req.body.token },
+            { $push: { contrats: newContrat._id } }
+          ).then((data) => {
             console.log("JE SUIS LES DATA", data);
             res.json({ result: true, contrat: newContrat });
-          })
+          });
         });
         User.updateOne(
           { token: req.body.token },
@@ -204,3 +206,4 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
+
