@@ -5,8 +5,6 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
-
-
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -20,19 +18,19 @@ router.get("/allClients", (req, res) => {
 });
 
 router.get('/id/:clientId', (req,res) => {
-  Client.findById({ _id : req.params.clientId})
-  .populate({
-    path:'interlocutor',
-    populate: {path:'client'}
-  })
-  .then(data => {
-    if(data) {
-      res.json({result: true, client: data})
-    } else {
-      res.json({result: false, error: "Aucun client trouvé"})
-    }
-  })
-});
+    Client.findById({ _id : req.params.clientId})
+    .populate({
+      path:'interlocutor',
+      populate: {path:'client'}
+    })
+    .then(data => {
+      if(data) {
+        res.json({result: true, client: data})
+      } else {
+        res.json({result: false, error: "Aucun client trouvé"})
+      }
+    })
+  });
 
 router.get('/:clientName', (req,res) => {
   Client.findOne({ name : req.params.clientName})
@@ -75,40 +73,40 @@ router.post("/uploadClient", async (req, res) => {
       chiffre: req.body.chiffreAffaire,
     });
 
-    // Sauvegarde le client créé
-    let newDoc = await newClient.save();
+// Sauvegarde le client créé
+let newDoc = await newClient.save();
 
-    // Crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-    req.body.interlocutors.map(async (e) => {
-      const newInterlocutor = new Interlocutor({
-        client: newDoc._id,
-        phone: e.phoneNumber,
-        name: e.name,
-        firstname: e.firstname,
-        email: e.email,
-        poste: e.poste,
-      });
+// Crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+req.body.interlocutors.map(async (e) => {
+  const newInterlocutor = new Interlocutor({
+    client: newDoc._id,
+    phone: e.phoneNumber,
+    name: e.name,
+    firstname: e.firstname,
+    email: e.email,
+    poste: e.poste,
+  });
 
-      // Sauvegarde le nouvel interlocuteur
-      let newInterloc = await newInterlocutor.save();
+  // Sauvegarde le nouvel interlocuteur
+  let newInterloc = await newInterlocutor.save();
 
-      // Met à jour le client avec le nouvel interlocuteur
-      let clientToUpdate = await Client.updateOne(
-        {
-          _id: newDoc._id,
-        },
-        {
-          $push: { interlocutor: newInterloc._id },
-        }
-      );
-    });
+  // Met à jour le client avec le nouvel interlocuteur
+  let clientToUpdate = await Client.updateOne(
+    {
+      _id: newDoc._id,
+    },
+    {
+      $push: { interlocutor: newInterloc._id },
+    }
+  );
+});
 
-    // Ajoute le client à l'utilisateur associé au token
-    await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
-    );
+// Ajoute le client à l'utilisateur associé au token
+await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
+);
 
-    // Envoie une réponse positive au client
-    res.json({ result: true });
+// Envoie une réponse positive au client
+res.json({ result: true });
   } else {
     // Envoie une réponse négative au client si le client existe déjà
     res.json({ result: false, error: "Client already exists" });
@@ -167,12 +165,34 @@ router.get('/test/:token', (req, res) => {
         })
 });
 
-// router.get('/clients/encore', (req,res) => {
-//   Client.find({})
-//   .then(data => {
-//     console.log("JE SUIS LES DATA =>>>>", data);
-//     res.json({resul: true, client: data})
-//   })
-// })
+router.delete('/delete/:id', (req,res) => {
+  Client.deleteOne({_id : req.params.id}).then(data => {
+    if (data) {
+      res.json({ result: true, client: data });
+    } else {
+      res.json({ result: false, error: "Client pas trouver !" });
+    }
+  })
+});
+
+router.put("/update/:id", (req, res) => {
+  Client.updateOne({ _id: req.params.id },
+    {
+      name: req.body.name,
+      address: req.body.address,
+      numberOfEmployees: req.body.numberOfEmployees,
+      clientBirth: req.body.clientBirth,
+      chiffre: req.body.chiffre,
+    }
+  ).then(() => {
+    Client.findById({ _id: req.params.id }).then((data) => {
+      if (data) {
+        res.json({ result: true, client: data });
+      } else {
+        res.json({ result: false, error: "Client pas trouver !" });
+      }
+    });
+  });
+});
 
 module.exports = router;

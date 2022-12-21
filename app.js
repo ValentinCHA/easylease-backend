@@ -12,6 +12,7 @@ var clientRouter = require("./routes/client");
 var scenaryRouter = require("./routes/scenary");
 var contratRouter = require("./routes/contrat");
 var interlocutorRouter = require("./routes/interlocutor");
+var cloudinaryRouter = require("./routes/cloudinary");
 
 var app = express();
 
@@ -30,5 +31,6 @@ app.use("/scenary", scenaryRouter);
 app.use("/client", clientRouter);
 app.use("/contrat", contratRouter);
 app.use("/interlocutor", interlocutorRouter);
+app.use("/cloudinary", cloudinaryRouter);
 
 module.exports = app;
