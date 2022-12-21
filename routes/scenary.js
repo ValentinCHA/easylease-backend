@@ -3,9 +3,21 @@ var router = express.Router();
 
 const Scenary = require("../models/scenary");
 const { checkBody } = require("../modules/checkBody");
+const User = require('../models/users')
 
-router.get("/testroute", (req, res) => {
-  res.json({ result: true });
+router.get("/token/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate({
+      path: 'scenary',
+      populate: 'client'
+    })
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, userInfos: data });
+      } else {
+        res.json({ message: "rien trouvé" });
+      }
+    });
 });
 
 router.post("/new", (req, res) => {
@@ -44,9 +56,11 @@ router.post("/new", (req, res) => {
           links: req.body.links,
           marge: req.body.marge,
         });
-
         newScenary.save().then((newScenary) => {
-          res.json({ result: true, infosScenario: newScenary });
+          User.updateOne({ token: req.body.token },{$push: { scenary: newScenary._id },})
+          .then(data => {
+            res.json({ result: true, contrat: newScenary });
+          })
         });
       } else {
         // Scenary already exists in database
@@ -111,5 +125,7 @@ router.put("/update/:id", (req, res) => {
     });
   });
 });
+
+
 
 module.exports = router;

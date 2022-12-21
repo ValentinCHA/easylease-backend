@@ -5,6 +5,8 @@ const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 
+
+
 router.get("/allClients", (req, res) => {
   Client.find({})
     .populate("interlocutor")
@@ -70,40 +72,40 @@ router.post("/uploadClient", async (req, res) => {
       chiffre: req.body.chiffreAffaire,
     });
 
-// Sauvegarde le client créé
-let newDoc = await newClient.save();
+    // Sauvegarde le client créé
+    let newDoc = await newClient.save();
 
-// Crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
-req.body.interlocutors.map(async (e) => {
-  const newInterlocutor = new Interlocutor({
-    client: newDoc._id,
-    phone: e.phoneNumber,
-    name: e.name,
-    firstname: e.firstname,
-    email: e.email,
-    poste: e.poste,
-  });
+    // Crée un document interlocuteur pour chaque entrée du tableau interlocutors venant du front
+    req.body.interlocutors.map(async (e) => {
+      const newInterlocutor = new Interlocutor({
+        client: newDoc._id,
+        phone: e.phoneNumber,
+        name: e.name,
+        firstname: e.firstname,
+        email: e.email,
+        poste: e.poste,
+      });
 
-  // Sauvegarde le nouvel interlocuteur
-  let newInterloc = await newInterlocutor.save();
+      // Sauvegarde le nouvel interlocuteur
+      let newInterloc = await newInterlocutor.save();
 
-  // Met à jour le client avec le nouvel interlocuteur
-  let clientToUpdate = await Client.updateOne(
-    {
-      _id: newDoc._id,
-    },
-    {
-      $push: { interlocutor: newInterloc._id },
-    }
-  );
-});
+      // Met à jour le client avec le nouvel interlocuteur
+      let clientToUpdate = await Client.updateOne(
+        {
+          _id: newDoc._id,
+        },
+        {
+          $push: { interlocutor: newInterloc._id },
+        }
+      );
+    });
 
-// Ajoute le client à l'utilisateur associé au token
-await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
-);
+    // Ajoute le client à l'utilisateur associé au token
+    await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
+    );
 
-// Envoie une réponse positive au client
-res.json({ result: true });
+    // Envoie une réponse positive au client
+    res.json({ result: true });
   } else {
     // Envoie une réponse négative au client si le client existe déjà
     res.json({ result: false, error: "Client already exists" });

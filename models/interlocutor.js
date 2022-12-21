@@ -1,15 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const interlocutorSchema = new mongoose.Schema({
-  client: [{ type: mongoose.Schema.Types.ObjectId, ref: "clients", required : true }],
-  tel: { type: String, required: false },
   name: { type: String, required: true },
   firstname: { type: String, required: true },
+  poste: { type: String, required: false },
+  phone: { type: String, required: false },
   email: { type: String, required: false },
-  poste: { type: String, required: false }
+  client: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "clients", required: true },
+  ],
 });
 
-const Interlocutor = mongoose.model('interlocutors', interlocutorSchema);
+const Interlocutor = mongoose.model("interlocutors", interlocutorSchema);
 
 module.exports = Interlocutor;
 
@@ -24,4 +26,3 @@ module.exports = Interlocutor;
 
 const Interlocutor = mongoose.model("interlocutors", interlocutorSchema);
 */
-

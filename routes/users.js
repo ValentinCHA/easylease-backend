@@ -61,4 +61,41 @@ router.post('/signin', (req, res) => {
   });
 });
 
+router.post('/updateMdp', (req, res) => {
+
+  if (!checkBody(req.body, ['email', 'currentPassword', 'newPassword', 'confirmPassword'])) {
+    res.json({ result: false, error: 'Champs vides ou manquants' });
+    return;
+  }
+
+  // Recherche l'utilisateur dans la base de données
+  User.findOne({ email: { $regex: new RegExp(req.body.email, 'i') } }).then(user => {
+    if (!user) {
+      res.json({result: false, error: "Utilisateur innexistant"})
+      return;
+    }
+    // Vérifie si le mot de passe actuel est correct
+    if (!bcrypt.compareSync(req.body.currentPassword, user.password)) {
+      res.json({ result: false, error: 'Mot de passe actuel incorrect' });
+      return;
+    }
+    // Vérifie si le nouveau mot de passe et la confirmation sont identiques
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      res.json({ result: false, error: 'Le nouveau mot de passe et la confirmation ne sont pas identiques' });
+      return;
+    }
+    // Hashage du nouveau mot de passe
+    const hashedPassword = bcrypt.hashSync(req.body.newPassword, 10);
+    // Met à jour le mot de passe de l'utilisateur dans la base de données
+    User.updateOne({ email: { $regex: new RegExp(req.body.email, 'i') } }, { $set: { password: hashedPassword } })
+      .then(() => {
+        res.json({ result: true });
+      })
+      .catch(err => {
+        // Si une erreur se produit, renvoie l'erreur
+        res.json({ result: false, error: err });
+      });
+  });
+});
+
 module.exports = router;
