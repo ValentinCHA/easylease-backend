@@ -18,16 +18,19 @@ router.get("/allClients", (req, res) => {
 });
 
 router.get('/id/:clientId', (req,res) => {
-  Client.findById({ _id : req.params.clientId})
-  .populate("interlocutor")
-  .then(data => {
-    if(data) {
-      res.json({result: true, client: data})
-    } else {
-      res.json({result: false, error: "Aucun client trouvé"})
-    }
-  })
-});
+    Client.findById({ _id : req.params.clientId})
+    .populate({
+      path:'interlocutor',
+      populate: {path:'client'}
+    })
+    .then(data => {
+      if(data) {
+        res.json({result: true, client: data})
+      } else {
+        res.json({result: false, error: "Aucun client trouvé"})
+      }
+    })
+  });
 
 router.get('/:clientName', (req,res) => {
   Client.findOne({ name : req.params.clientName})
