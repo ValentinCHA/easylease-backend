@@ -21,7 +21,10 @@ router.get("/allClients", (req, res) => {
 
 router.get('/id/:clientId', (req,res) => {
   Client.findById({ _id : req.params.clientId})
-  .populate("interlocutor")
+  .populate({
+    path:"interlocutor",
+    populate:{path:"client"}
+  })
   .then(data => {
     if(data) {
       res.json({result: true, client: data})
@@ -154,7 +157,10 @@ router.post("/addInterlocutor", (req, res) => {
 
 router.get('/test/:token', (req, res) => {
     User.findOne({ token: req.params.token })
-        .populate('clients')
+    .populate({
+        path: 'clients',
+        populate: {path: 'interlocutor'}
+      })
         .then(data => {
             if (data) {
                 res.json({ result: true, clientsInfos: data})
@@ -164,12 +170,34 @@ router.get('/test/:token', (req, res) => {
         })
 });
 
-// router.get('/clients/encore', (req,res) => {
-//   Client.find({})
-//   .then(data => {
-//     console.log("JE SUIS LES DATA =>>>>", data);
-//     res.json({resul: true, client: data})
-//   })
-// })
+router.delete('/delete/:id', (req,res) => {
+    Client.deleteOne({_id : req.params.id}).then(data => {
+      if (data) {
+        res.json({ result: true, client: data });
+      } else {
+        res.json({ result: false, error: "Client pas trouver !" });
+      }
+    })
+  });
+  
+  router.put("/update/:id", (req, res) => {
+    Client.updateOne({ _id: req.params.id },
+      {
+        name: req.body.name,
+        address: req.body.address,
+        numberOfEmployees: req.body.numberOfEmployees,
+        clientBirth: req.body.clientBirth,
+        chiffre: req.body.chiffre,
+      }
+    ).then(() => {
+      Client.findById({ _id: req.params.id }).then((data) => {
+        if (data) {
+          res.json({ result: true, client: data });
+        } else {
+          res.json({ result: false, error: "Client pas trouver !" });
+        }
+      });
+    });
+  });
 
 module.exports = router;
