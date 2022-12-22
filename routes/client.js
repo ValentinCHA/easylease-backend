@@ -4,6 +4,7 @@ const Client = require("../models/client");
 const User = require("../models/users");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
+const { populate } = require("../models/users");
 
 router.get("/allClients", (req, res) => {
   Client.find({})
@@ -18,13 +19,21 @@ router.get("/allClients", (req, res) => {
 });
 
 router.get('/id/:clientId', (req,res) => {
+  console.log("client en qqq");
     Client.findById({ _id : req.params.clientId})
+    .populate('contrats')
     .populate({
       path:'interlocutor',
-      populate: {path:'client'}
+      populate: {
+        path:'client',
+        populate: {
+          path : 'contrats'
+        }
+    }
     })
     .then(data => {
       if(data) {
+        console.log("date",data);
         res.json({result: true, client: data})
       } else {
         res.json({result: false, error: "Aucun client trouvé"})
@@ -155,7 +164,10 @@ router.post("/addInterlocutor", (req, res) => {
 
 router.get('/test/:token', (req, res) => {
     User.findOne({ token: req.params.token })
-        .populate('clients')
+        .populate({
+          path: 'clients',
+          populate: {path:'contrats'}
+        })
         .then(data => {
             if (data) {
                 res.json({ result: true, clientsInfos: data})

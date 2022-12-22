@@ -65,6 +65,7 @@ router.post("/addContrat", (req, res) => {
     res.json({ result: false, error: "Champs vides ou manquants !" });
     return;
   }
+  console.log("req body =>",req.body);
 
   Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
     (data) => {
@@ -84,22 +85,19 @@ router.post("/addContrat", (req, res) => {
           marge: req.body.marge,
         });
         newContrat.save().then((newContrat) => {
+          Client.updateOne(
+            {_id: req.body.client},
+            { $push: { contrats: newContrat._id } })
+            .then(data => console.log("update client",data)) 
           User.updateOne(
             { token: req.body.token },
-            { $push: { contrats: newContrat._id } }
+            { $push: { contrats: newContrat._id } },
+          
           ).then((data) => {
-            console.log("JE SUIS LES DATA", data);
+            console.log("update user", data);
             res.json({ result: true, contrat: newContrat });
           });
-        });
-        User.updateOne(
-          { token: req.body.token },
-          { $push: { contrats: newContrat._id } }
-        );
-        Client.updateOne(
-          {_id: req.body.client},
-          { $push: { contrats: newContrat._id } }
-          )
+        })
       } else {
         res.json({ result: false, error: "Contrat déjà existant !" });
       }
