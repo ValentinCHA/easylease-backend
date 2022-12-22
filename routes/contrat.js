@@ -37,10 +37,10 @@ router.get("/:token", (req, res) => {
 
 router.get("/contrat/:_id", (req, res) => {
   Contrat.findById({ _id: req.params._id })
-    //.populate("client")
+    .populate("client")
     .populate("interlocutor")
     .then((data) => {
-      console.log(data);
+      console.log("route contrat contrat", data);
       if (data) {
         res.json({ result: true, contrat: data });
       }
@@ -160,6 +160,7 @@ router.put("/addInterlocutor/:id", (req, res) => {
 });
 
 router.put("/updateContrat/:id", (req, res) => {
+  console.log("LES DATAS DE BODY UPDATEDATA", req.body);
   Contrat.updateOne(
     { _id: req.params.id },
     {
@@ -183,6 +184,7 @@ router.put("/updateContrat/:id", (req, res) => {
 });
 
 router.put("/updateLink/:id", (req, res) => {
+  console.log("AMIN DIT MOI ????", req.body);
   Contrat.updateOne({ _id: req.params.id }, { links: req.body.links }).then(
     () => {
       Contrat.findById({ _id: req.params.id }).then((data) => {
@@ -208,4 +210,3 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
-

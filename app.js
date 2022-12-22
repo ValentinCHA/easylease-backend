@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./models/connection");
+const fileUpload = require("express-fileupload");
 
 var express = require("express");
 var path = require("path");
@@ -17,7 +18,9 @@ var cloudinaryRouter = require("./routes/cloudinary");
 var app = express();
 
 const cors = require("cors");
+
 app.use(cors());
+app.use(fileUpload());
 
 app.use(logger("dev"));
 app.use(express.json());
