@@ -70,15 +70,15 @@ router.post("/new", (req, res) => {
   );
 });
 
-router.get("/all", (req, res) => {
-  Scenary.find().then((data) => {
-    if (data) {
-      res.json({ result: true, scenaries: data });
-    } else {
-      res.json({ result: false, error: "Pas de scénarios !" });
-    }
-  });
-});
+// router.get("/all", (req, res) => {
+//   Scenary.find().then((data) => {
+//     if (data) {
+//       res.json({ result: true, scenaries: data });
+//     } else {
+//       res.json({ result: false, error: "Pas de scénarios !" });
+//     }
+//   });
+// });
 
 router.get("/:id", (req, res) => {
   Scenary.findById({ _id: req.params.id }).then((data) => {

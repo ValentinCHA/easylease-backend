@@ -30,7 +30,7 @@ router.get("/:token", (req, res) => {
       if (data) {
         res.json({ result: true, userInfos: data });
       } else {
-        res.json({ message: "rien trouvé" });
+        res.json({result: false,  message: "rien trouvé" });
       }
     });
 });
@@ -43,6 +43,8 @@ router.get("/contrat/:_id", (req, res) => {
       console.log("route contrat contrat", data);
       if (data) {
         res.json({ result: true, contrat: data });
+      } else {
+        res.json({ result: false, error : "Contrat pas trouvé" });
       }
     });
 });
@@ -67,9 +69,6 @@ router.post("/addContrat", (req, res) => {
   }
   console.log("req body =>",req.body);
 
-  Contrat.findOne({ name: { $regex: new RegExp(req.body.name, "i") } }).then(
-    (data) => {
-      if (!data) {
         const newContrat = new Contrat({
           client: req.body.client,
           name: req.body.name,
@@ -94,16 +93,16 @@ router.post("/addContrat", (req, res) => {
             { $push: { contrats: newContrat._id } },
           
           ).then((data) => {
-            console.log("update user", data);
-            res.json({ result: true, contrat: newContrat });
+            if (data) {
+              console.log("update user", data);
+              res.json({ result: true, contrat: newContrat });
+            } else {
+              res.json({result: false, error: "User pas update"})
+            }
           });
         })
-      } else {
-        res.json({ result: false, error: "Contrat déjà existant !" });
-      }
     }
   );
-});
 
 // :id correspond à l'ID du contrat
 router.put("/addInterlocutor/:id", (req, res) => {
@@ -117,7 +116,7 @@ router.put("/addInterlocutor/:id", (req, res) => {
       "client",
     ])
   ) {
-    res.json({ result: false, error: "Missing or empty fields" });
+    res.json({ result: false, error: "Champs vides ou manquants" });
     return;
   }
 

@@ -21,6 +21,8 @@ router.get("/:_id", (req, res) => {
     .then((data) => {
       if (data) {
         res.json({ result: true, contrat: data });
+      } else {
+        res.json({ result: false, error: "Interlocuteur pas trouvé via l'id" });
       }
     });
 });
