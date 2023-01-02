@@ -5,6 +5,10 @@ const Scenary = require("../models/scenary");
 const { checkBody } = require("../modules/checkBody");
 const User = require('../models/users')
 
+router.get("/test", (req,res) => {
+  res.json({result:true, message: "TEST PASSED !!"})
+})
+
 router.get("/token/:token", (req, res) => {
   User.findOne({ token: req.params.token })
     .populate({
