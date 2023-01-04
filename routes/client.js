@@ -70,9 +70,9 @@ router.post("/uploadClient", async (req, res) => {
   }
 
   // Vérifie l'existence du client
-  let clientData = await Client.findOne({ name: req.body.name });
+  // let clientData = await Client.findOne({ name: req.body.name });
 
-  if (clientData === null) {
+  // if (clientData === null) {
     // Crée un nouveau client
     const newClient = new Client({
       name: req.body.name,
@@ -116,10 +116,10 @@ await User.updateOne({ token: req.body.token },{$push: { clients: newDoc._id },}
 
 // Envoie une réponse positive au client
 res.json({ result: true });
-  } else {
-    // Envoie une réponse négative au client si le client existe déjà
-    res.json({ result: false, error: "Client existe déja" });
-  }
+  // } else {
+  //   // Envoie une réponse négative au client si le client existe déjà
+  //   res.json({ result: false, error: "Client existe déja" });
+  // }
 });
 
 router.post("/addInterlocutor", (req, res) => {
