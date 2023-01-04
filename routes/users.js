@@ -98,4 +98,15 @@ router.post('/updateMdp', (req, res) => {
   });
 });
 
+router.delete('/delete/:token', (req,res) => {
+  User.deleteOne({token: req.params.token})
+  .then (data => {
+    if (data) {
+      res.json({result: true, resultat: data})
+    } else {
+      res.json({result: false, error : "User non supprimé"})
+    }
+  })
+});
+
 module.exports = router;
