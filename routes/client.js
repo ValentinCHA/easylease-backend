@@ -226,13 +226,13 @@ router.delete('/delete/:id', (req, res) => {
                 return;
               }
 
-              // Client.deleteOne({ _id: client._id }).then(data => {
-              //   if (data) {
-              //     res.json({ result: true });
-              //   } else {
-              //     res.json({ result: false, error: "Failed to delete client" });
-              //   }
-              // })
+              Client.deleteOne({ _id: client._id }).then(data => {
+                if (data) {
+                  res.json({ result: true });
+                } else {
+                  res.json({ result: false, error: "Failed to delete client" });
+                }
+              })
             })
         })
     })
