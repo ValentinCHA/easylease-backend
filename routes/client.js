@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const Client = require("../models/client");
 const User = require("../models/users");
+const Scenary = require("../models/scenary");
+const Contrat = require("../models/contrat");
 const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 const { populate } = require("../models/users");
@@ -178,12 +180,28 @@ router.get('/test/:token', (req, res) => {
 });
 
 router.delete('/delete/:id', (req,res) => {
-  Client.deleteOne({_id : req.params.id}).then(data => {
-    if (data) {
-      res.json({ result: true, client: data });
-    } else {
-      res.json({ result: false, error: "Client pas trouver !" });
+  Contrat.find({})
+  .then(dataContrat => {
+    if (dataContrat.length >= 1) {
+      res.json({result: false, contrats : dataContrat})
     }
+  })
+  .then(() => {
+    Scenary.find({})
+    .then(dataScenary => {
+      if (dataScenary.length >= 1) {
+        res.json({result: false, scénarios : dataScenary})
+      }
+    })
+  })
+  .then(() => {
+    Client.deleteOne({_id : req.params.id}).then(data => {
+      if (data) {
+        res.json({ result: true, client: data });
+      } else {
+        res.json({ result: false, error: "Client pas trouver !" });
+      }
+    })
   })
 });
 
