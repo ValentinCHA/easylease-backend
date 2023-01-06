@@ -4,6 +4,7 @@ var router = express.Router();
 const Scenary = require("../models/scenary");
 const { checkBody } = require("../modules/checkBody");
 const User = require('../models/users')
+const Client = require('../models/client')
 
 router.get("/test", (req,res) => {
   res.json({result:true, message: "TEST PASSED !!"})
@@ -61,8 +62,13 @@ router.post("/new", (req, res) => {
           marge: req.body.marge,
         });
         newScenary.save().then((newScenary) => {
-          User.updateOne({ token: req.body.token },{$push: { scenary: newScenary._id },})
-          .then(data => {
+          User.updateOne({ token: req.body.token },{$push: { scenary: newScenary._id }})
+          .then(() => {
+            Client.updateOne(
+              {_id: req.body.client},
+              {$push: { scenary: newScenary._id }} )
+          })
+          .then(() => {
             res.json({ result: true, contrat: newScenary });
           })
         });

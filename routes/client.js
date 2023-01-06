@@ -6,17 +6,17 @@ const Interlocutor = require("../models/interlocutor");
 const { checkBody } = require("../modules/checkBody");
 const { populate } = require("../models/users");
 
-// router.get("/allClients", (req, res) => {
-//   Client.find({})
-//     .populate("interlocutor")
-//     .then((data) => {
-//       if (data) {
-//         res.json({ result: true, clients: data });
-//       } else {
-//         res.json({ result: false, error: "Aucun client trouvé" });
-//       }
-//     });
-// });
+router.get("/allClients", (req, res) => {
+  Client.find({})
+    .populate("interlocutor")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, clients: data });
+      } else {
+        res.json({ result: false, error: "Aucun client trouvé" });
+      }
+    });
+});
 
 router.get('/id/:clientId', (req,res) => {
   console.log("client en qqq");
