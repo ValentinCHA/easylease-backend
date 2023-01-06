@@ -183,14 +183,16 @@ router.delete('/delete/:id', (req,res) => {
   Contrat.find({})
   .then(dataContrat => {
     if (dataContrat.length >= 1) {
-      res.json({result: false, contrats : dataContrat})
+      res.json({result: false, contrats : dataContrat});
+      return
     }
   })
   .then(() => {
     Scenary.find({})
     .then(dataScenary => {
       if (dataScenary.length >= 1) {
-        res.json({result: false, scénarios : dataScenary})
+        res.json({result: false, scénarios : dataScenary});
+        return
       }
     })
   })
