@@ -208,21 +208,21 @@ router.delete('/delete/:id', (req, res) => {
   Client.findById(req.params.id)
     .then(client => {
       if (!client) {
-        res.json({ result: false, error: "Client not found!" });
+        res.json({ result: false, error: "Client pas trouvé" });
         return;
       }
 
       Contrat.find({ client: client._id })
         .then(dataContrat => {
           if (dataContrat.length >= 1) {
-            res.json({ result: false, error: "Cannot delete client because it has associated contracts", contrats: dataContrat });
+            res.json({ result: false, error: "Impossible de supprimer le client car il dispose de contrats", contrats: dataContrat });
             return;
           }
 
           Scenary.find({ client: client._id })
             .then(dataScenary => {
               if (dataScenary.length >= 1) {
-                res.json({ result: false, error: "Cannot delete client because it has associated scenarios", scénarios: dataScenary });
+                res.json({ result: false, error: "Impossible de supprimer le client car il dispose de scénarios", scénarios: dataScenary });
                 return;
               }
 
@@ -230,7 +230,7 @@ router.delete('/delete/:id', (req, res) => {
                 if (data) {
                   res.json({ result: true });
                 } else {
-                  res.json({ result: false, error: "Failed to delete client" });
+                  res.json({ result: false, error: "Echec de la suppression du client" });
                 }
               })
             })
