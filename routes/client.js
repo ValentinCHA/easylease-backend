@@ -187,7 +187,6 @@ router.delete('/delete/:id', (req,res) => {
       return
     }
   })
-  .then(() => {
     Scenary.find({})
     .then(dataScenary => {
       if (dataScenary.length >= 1) {
@@ -195,8 +194,7 @@ router.delete('/delete/:id', (req,res) => {
         return
       }
     })
-  })
-  .then(() => {
+
     Client.deleteOne({_id : req.params.id}).then(data => {
       if (data) {
         res.json({ result: true, client: data });
@@ -204,7 +202,6 @@ router.delete('/delete/:id', (req,res) => {
         res.json({ result: false, error: "Client pas trouver !" });
       }
     })
-  })
 });
 
 router.put("/update/:id", (req, res) => {
