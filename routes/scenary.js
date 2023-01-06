@@ -62,13 +62,15 @@ router.post("/new", (req, res) => {
           marge: req.body.marge,
         });
         newScenary.save().then((newScenary) => {
-          User.updateOne({ token: req.body.token },{$push: { scenary: newScenary._id }})
-          .then(() => {
-            Client.updateOne(
-              {_id: req.body.client},
-              {$push: { scenary: newScenary._id }} )
-          })
-          .then(() => {
+          Client.updateOne(
+            {_id: req.body.client},
+            {$push: { scenary: newScenary._id }} )
+            .then(data => console.log("update client",data)) 
+          User.updateOne(
+            { token: req.body.token },
+            {$push: { scenary: newScenary._id }},
+
+            ).then(() => {
             res.json({ result: true, contrat: newScenary });
           })
         });
