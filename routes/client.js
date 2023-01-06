@@ -179,30 +179,65 @@ router.get('/test/:token', (req, res) => {
         })
 });
 
-router.delete('/delete/:id', (req,res) => {
-  Contrat.find({})
-  .then(dataContrat => {
-    if (dataContrat.length >= 1) {
-      res.json({result: false, contrats : dataContrat});
-      return
-    }
-  })
-    Scenary.find({})
-    .then(dataScenary => {
-      if (dataScenary.length >= 1) {
-        res.json({result: false, scénarios : dataScenary});
-        return
-      }
-    })
+// router.delete('/delete/:id', (req,res) => {
+//   Contrat.find({})
+//   .then(dataContrat => {
+//     if (dataContrat.length >= 1) {
+//       res.json({result: false, contrats : dataContrat});
+//       return
+//     }
+//   })
+//     Scenary.find({})
+//     .then(dataScenary => {
+//       if (dataScenary.length >= 1) {
+//         res.json({result: false, scénarios : dataScenary});
+//         return
+//       }
+//     })
 
-    Client.deleteOne({_id : req.params.id}).then(data => {
-      if (data) {
-        res.json({ result: true, client: data });
-      } else {
-        res.json({ result: false, error: "Client pas trouver !" });
+//     Client.deleteOne({_id : req.params.id}).then(data => {
+//       if (data) {
+//         res.json({ result: true, client: data });
+//       } else {
+//         res.json({ result: false, error: "Client pas trouver !" });
+//       }
+//     })
+// });
+
+router.delete('/delete/:id', (req, res) => {
+  Client.findById(req.params.id)
+    .then(client => {
+      if (!client) {
+        res.json({ result: false, error: "Client not found!" });
+        return;
       }
+
+      Contrat.find({ client: client._id })
+        .then(dataContrat => {
+          if (dataContrat.length >= 1) {
+            res.json({ result: false, error: "Cannot delete client because it has associated contracts", contrats: dataContrat });
+            return;
+          }
+
+          Scenary.find({ client: client._id })
+            .then(dataScenary => {
+              if (dataScenary.length >= 1) {
+                res.json({ result: false, error: "Cannot delete client because it has associated scenarios", scénarios: dataScenary });
+                return;
+              }
+
+              // Client.deleteOne({ _id: client._id }).then(data => {
+              //   if (data) {
+              //     res.json({ result: true });
+              //   } else {
+              //     res.json({ result: false, error: "Failed to delete client" });
+              //   }
+              // })
+            })
+        })
     })
 });
+
 
 router.put("/update/:id", (req, res) => {
   Client.updateOne({ _id: req.params.id },
